@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import java.time.LocalTime;
 
@@ -14,7 +15,9 @@ import java.time.LocalTime;
 @Builder
 @Getter
 @Setter
-@Table(name = "song")
+@Table(name = "song", indexes = {
+        @Index(name = "unique_idx", columnList = "title, duration", unique = true)
+})
 public class StoredSong extends BaseEntity {
 
     @Id

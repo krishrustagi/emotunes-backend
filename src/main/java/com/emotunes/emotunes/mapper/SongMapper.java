@@ -1,6 +1,6 @@
 package com.emotunes.emotunes.mapper;
 
-import com.emotunes.emotunes.dto.SongDto;
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.util.IdGenerationUtil;
@@ -11,18 +11,18 @@ import java.time.LocalTime;
 @UtilityClass
 public class SongMapper {
 
-    public static SongDto toSongDto(StoredSong storedSong) {
-        return SongDto.builder()
+    public static SongMetadata toSongDto(StoredSong storedSong) {
+        return SongMetadata.builder()
                 .title(storedSong.getTitle())
                 .duration(storedSong.getDuration().toString())
                 .build();
     }
 
-    public static StoredSong toSongEntity(SongDto songDto, Emotion emotion) {
+    public static StoredSong toSongEntity(SongMetadata songMetadata, Emotion emotion) {
         return StoredSong.builder()
                 .id(IdGenerationUtil.getRandomId())
-                .title(songDto.getTitle())
-                .duration(LocalTime.parse(songDto.getDuration()))
+                .title(songMetadata.getTitle())
+                .duration(LocalTime.parse(songMetadata.getDuration()))
                 .emotion(emotion)
                 .build();
     }

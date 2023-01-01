@@ -1,6 +1,6 @@
 package com.emotunes.emotunes.dao;
 
-import com.emotunes.emotunes.dto.SongDto;
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredLikedSong;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUser;
@@ -30,13 +30,13 @@ public class LikedSongsDao {
                         .build());
     }
 
-    public List<SongDto> getAllLikedSongs(String userId) {
+    public List<SongMetadata> getAllLikedSongs(String userId) {
         StoredUser storedUser = userRepository.getReferenceById(userId);
         List<StoredSong> songList = likedSongRepository.getAllLikedSongs(storedUser);
 
-        List<SongDto> songDtoList = new ArrayList<>();
-        songList.forEach(storedSong -> songDtoList.add(SongMapper.toSongDto(storedSong)));
+        List<SongMetadata> songMetadataList = new ArrayList<>();
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
 
-        return songDtoList;
+        return songMetadataList;
     }
 }

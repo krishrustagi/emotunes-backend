@@ -1,6 +1,6 @@
 package com.emotunes.emotunes.dao;
 
-import com.emotunes.emotunes.dto.SongDto;
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.mapper.SongMapper;
@@ -17,31 +17,31 @@ public class SongsDao {
 
     private final SongRepository songRepository;
 
-    public List<SongDto> getAll() {
+    public List<SongMetadata> getAll() {
         List<StoredSong> songList = songRepository.findAll();
-        List<SongDto> songDtoList = new ArrayList<>();
+        List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(storedSong -> songDtoList.add(SongMapper.toSongDto(storedSong)));
-        return songDtoList;
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
+        return songMetadataList;
     }
 
-    public List<SongDto> getSongsByPrefix(String prefix) {
+    public List<SongMetadata> getSongsByPrefix(String prefix) {
         List<StoredSong> songList = songRepository.findAllByPrefix(prefix);
-        List<SongDto> songDtoList = new ArrayList<>();
+        List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(storedSong -> songDtoList.add(SongMapper.toSongDto(storedSong)));
-        return songDtoList;
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
+        return songMetadataList;
     }
 
-    public List<SongDto> getSongsByEmotion(Emotion emotion) {
+    public List<SongMetadata> getSongsByEmotion(Emotion emotion) {
         List<StoredSong> songList = songRepository.findAllByEmotion(emotion.name());
-        List<SongDto> songDtoList = new ArrayList<>();
+        List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(storedSong -> songDtoList.add(SongMapper.toSongDto(storedSong)));
-        return songDtoList;
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
+        return songMetadataList;
     }
 
-    public void addSong(SongDto songDto, Emotion emotion) {
-        songRepository.save(SongMapper.toSongEntity(songDto, emotion));
+    public void addSong(SongMetadata songMetadata, Emotion emotion) {
+        songRepository.save(SongMapper.toSongEntity(songMetadata, emotion));
     }
 }

@@ -1,17 +1,17 @@
 package com.emotunes.emotunes.service;
 
-import com.emotunes.emotunes.dto.SongDto;
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 
 import java.util.List;
 
 public interface SongService {
 
-    List<SongDto> getAllSongs();
+    List<SongMetadata> getAllSongs();
 
-    List<SongDto> getSongsByPrefix(String prefix);
+    List<SongMetadata> getSongsByPrefix(String prefix);
 
-    List<SongDto> getSongsByEmotion(Emotion emotion);
+    List<SongMetadata> getSongsByEmotion(Emotion emotion);
 
-    List<SongDto> getLikedSongs(String userId);
+    List<SongMetadata> getLikedSongs(String userId);
 }
