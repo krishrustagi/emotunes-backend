@@ -8,11 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.TagException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,10 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +28,7 @@ public class AdminServiceImpl implements AdminService {
     private final SongsDao songsDao;
 
     @Override
-    public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException {
+    public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
 
         File file = convert(songFile);
 
@@ -65,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private File convert(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
+        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
         try(InputStream is = file.getInputStream()) {
             Files.copy(is, convFile.toPath());
         }
