@@ -1,20 +1,21 @@
 package com.emotunes.emotunes.entity;
 
 import com.emotunes.emotunes.enums.Emotion;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalTime;
 
+@Data
 @Entity
 @Builder
 @Getter
 @Setter
-@Table(name = "song")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "song", indexes = {
+        @Index(name = "unique_idx", columnList = "title, duration", unique = true)
+})
 public class StoredSong extends BaseEntity {
 
     @Id
@@ -22,6 +23,7 @@ public class StoredSong extends BaseEntity {
 
     private String title;
 
+    @Enumerated(EnumType.STRING)
     private Emotion emotion;
 
     private LocalTime duration;

@@ -2,7 +2,7 @@ package com.emotunes.emotunes.service.impl;
 
 import com.emotunes.emotunes.dao.LikedSongsDao;
 import com.emotunes.emotunes.dao.SongsDao;
-import com.emotunes.emotunes.dto.SongDto;
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.SongService;
 import lombok.RequiredArgsConstructor;
@@ -18,22 +18,22 @@ public class SongServiceImpl implements SongService {
     private final LikedSongsDao likedSongsDao;
 
     @Override
-    public List<SongDto> getAllSongs() {
+    public List<SongMetadata> getAllSongs() {
         return songsDao.getAll();
     }
 
     @Override
-    public List<SongDto> getSongsByPrefix(String prefix) {
+    public List<SongMetadata> getSongsByPrefix(String prefix) {
         return songsDao.getSongsByPrefix(prefix);
     }
 
     @Override
-    public List<SongDto> getSongsByEmotion(Emotion emotion) {
+    public List<SongMetadata> getSongsByEmotion(Emotion emotion) {
         return songsDao.getSongsByEmotion(emotion);
     }
 
     @Override
-    public List<SongDto> getLikedSongs(String userId) {
+    public List<SongMetadata> getLikedSongs(String userId) {
         return likedSongsDao.getAllLikedSongs(userId);
     }
 }

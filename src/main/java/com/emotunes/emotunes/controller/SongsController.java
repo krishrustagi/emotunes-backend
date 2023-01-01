@@ -1,6 +1,6 @@
 package com.emotunes.emotunes.controller;
 
-import com.emotunes.emotunes.dto.SongDto;
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.SongService;
 import io.swagger.annotations.Api;
@@ -22,25 +22,28 @@ public class SongsController {
 
     @GetMapping("/all")
     @ApiOperation("Get All Songs")
-    public ResponseEntity<List<SongDto>> getAllSongs() {
+    public ResponseEntity<List<SongMetadata>> getAllSongs() {
         return ResponseEntity.ok(songService.getAllSongs());
     }
 
     @GetMapping("/search")
     @ApiOperation("Search songs by Prefix")
-    public ResponseEntity<List<SongDto>> getSongsByPrefix(@RequestParam("/prefix") String prefix) {
+    public ResponseEntity<List<SongMetadata>> getSongsByPrefix(
+            @RequestParam("prefix") String prefix) {
         return ResponseEntity.ok(songService.getSongsByPrefix(prefix));
     }
 
     @GetMapping("/emotion")
     @ApiOperation("Get Songs By Emotion")
-    public ResponseEntity<List<SongDto>> getSongsByEmotion(@RequestParam(value = "/emotion", required = false) Emotion emotion) {
+    public ResponseEntity<List<SongMetadata>> getSongsByEmotion(
+            @RequestParam(value = "emotion", required = false) Emotion emotion) {
         return ResponseEntity.ok(songService.getSongsByEmotion(emotion));
     }
 
     @GetMapping("liked")
     @ApiOperation("Get All liked songs")
-    public ResponseEntity<List<SongDto>> getLikedSongs(@RequestParam("user_id") String userId) {
+    public ResponseEntity<List<SongMetadata>> getLikedSongs(
+            @RequestParam("user_id") String userId) {
         return ResponseEntity.ok(songService.getLikedSongs(userId));
     }
 }

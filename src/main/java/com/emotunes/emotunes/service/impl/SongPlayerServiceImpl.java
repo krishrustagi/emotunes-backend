@@ -7,6 +7,8 @@ import com.emotunes.emotunes.service.SongPlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class SongPlayerServiceImpl implements SongPlayerService {
@@ -15,8 +17,8 @@ public class SongPlayerServiceImpl implements SongPlayerService {
     private final DislikedSongDao dislikedSongDao;
 
     @Override
-    public void likeCurrentSong(String userId, String songId) {
-        likedSongsDao.saveLikedSong(userId, songId);
+    public void likeCurrentSong(String userId, String songTitle, LocalTime duration) {
+        likedSongsDao.saveLikedSong(userId, songTitle, duration);
     }
 
     @Override
