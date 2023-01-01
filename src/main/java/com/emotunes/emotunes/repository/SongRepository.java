@@ -12,7 +12,7 @@ public interface SongRepository extends JpaRepository<StoredSong, String> {
 
     @Query(
             value = "select * from song"
-                    + " where title like `?1",
+                    + " where title like ?1",
             nativeQuery = true)
     List<StoredSong> findAllByPrefix(String title);
 
