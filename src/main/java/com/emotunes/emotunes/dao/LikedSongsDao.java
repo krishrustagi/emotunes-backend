@@ -1,6 +1,6 @@
 package com.emotunes.emotunes.dao;
 
-import com.emotunes.emotunes.dto.SongDto;
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredLikedSong;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUser;
@@ -11,6 +11,7 @@ import com.emotunes.emotunes.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,21 +23,21 @@ public class LikedSongsDao {
     private final UserRepository userRepository;
     private final SongRepository songRepository;
 
-    public void saveLikedSong(String userId, String songId) {
+    public void saveLikedSong(String userId, String songTitle, LocalTime duration) {
         likedSongRepository.save(
                 StoredLikedSong.builder()
                         .user(userRepository.getReferenceById(userId))
-                        .song(songRepository.getReferenceById(songId))
+                        .song(songRepository.getByTitleAndDuration(songTitle, duration))
                         .build());
     }
 
-    public List<SongDto> getAllLikedSongs(String userId) {
+    public List<SongMetadata> getAllLikedSongs(String userId) {
         StoredUser storedUser = userRepository.getReferenceById(userId);
         List<StoredSong> songList = likedSongRepository.getAllLikedSongs(storedUser);
 
-        List<SongDto> songDtoList = new ArrayList<>();
-        songList.forEach(storedSong -> songDtoList.add(SongMapper.toSongDto(storedSong)));
+        List<SongMetadata> songMetadataList = new ArrayList<>();
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
 
-        return songDtoList;
+        return songMetadataList;
     }
 }

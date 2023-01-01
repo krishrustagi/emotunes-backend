@@ -1,13 +1,17 @@
 package com.emotunes.emotunes.controller;
 
-import com.emotunes.emotunes.dto.SongDto;
 import com.emotunes.emotunes.service.AdminService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController("/v1/admin/")
 @Api("Admin Controller")
@@ -16,9 +20,11 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @PostMapping("/song/add")
-    public ResponseEntity addSong(@RequestBody SongDto songDto) {
-        adminService.addSong(songDto);
-        return ResponseEntity.ok().build();
+    @PostMapping(value = "/song/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Upload song file")
+    public ResponseEntity<String> addSong(@RequestParam("file") MultipartFile songFile)
+            throws IOException {
+
+        return adminService.addSong(songFile);
     }
 }
