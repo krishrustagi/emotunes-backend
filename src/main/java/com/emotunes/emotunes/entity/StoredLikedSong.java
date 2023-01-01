@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "liked_song")
-public class StoredLikedSong extends BaseEntity{
+public class StoredLikedSong extends BaseEntity {
 
     @Id
     private String id;

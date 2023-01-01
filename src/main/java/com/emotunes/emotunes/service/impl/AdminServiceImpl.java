@@ -60,7 +60,7 @@ public class AdminServiceImpl implements AdminService {
 
     private File convert(MultipartFile file) throws IOException {
         File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        try(InputStream is = file.getInputStream()) {
+        try (InputStream is = file.getInputStream()) {
             Files.copy(is, convFile.toPath());
         }
 
