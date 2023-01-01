@@ -11,6 +11,7 @@ import com.emotunes.emotunes.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +23,11 @@ public class LikedSongsDao {
     private final UserRepository userRepository;
     private final SongRepository songRepository;
 
-    public void saveLikedSong(String userId, String songId) {
+    public void saveLikedSong(String userId, String songTitle, LocalTime duration) {
         likedSongRepository.save(
                 StoredLikedSong.builder()
                         .user(userRepository.getReferenceById(userId))
-                        .song(songRepository.getReferenceById(songId))
+                        .song(songRepository.getByTitleAndDuration(songTitle, duration))
                         .build());
     }
 

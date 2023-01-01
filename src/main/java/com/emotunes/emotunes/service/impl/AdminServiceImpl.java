@@ -50,7 +50,7 @@ public class AdminServiceImpl implements AdminService {
             songsDao.addSong(songMetadata, Emotion.HAPPY);
         } catch (Exception e) {
             log.info("Error while getting audio details! ", e);
-            return ResponseEntity.ok().body("Saving song failed!");
+            return ResponseEntity.internalServerError().body("Saving song failed!");
         } finally {
             Files.delete(file.toPath());
         }

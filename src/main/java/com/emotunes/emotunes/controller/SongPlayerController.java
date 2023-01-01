@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalTime;
+
 @RestController("/v1/song_player")
 @Api("Song Player Controller")
 @RequiredArgsConstructor
@@ -21,8 +23,9 @@ public class SongPlayerController {
     @ApiOperation(("Like the song"))
     public ResponseEntity<String> likeCurrentSong(
             @RequestParam("user_id") String userId,
-            @RequestParam("song_id") String songId) {
-        songPlayerService.likeCurrentSong(userId, songId);
+            @RequestParam("song_title") String songTitle,
+            @RequestParam("song_duration") String duration) {
+        songPlayerService.likeCurrentSong(userId, songTitle, LocalTime.parse(duration));
         return ResponseEntity.ok("Song Liked");
     }
 

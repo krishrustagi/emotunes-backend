@@ -26,7 +26,7 @@ public class SongsDao {
     }
 
     public List<SongMetadata> getSongsByPrefix(String prefix) {
-        List<StoredSong> songList = songRepository.findAllByPrefix(prefix);
+        List<StoredSong> songList = songRepository.findAllByTitleStartsWith(prefix);
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
         songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
