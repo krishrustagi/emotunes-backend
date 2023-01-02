@@ -7,12 +7,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalTime;
 
-@RestController("/v1/song_player")
+@RestController
+@RequestMapping("/v1/song_player")
 @Api("Song Player Controller")
 @RequiredArgsConstructor
 public class SongPlayerController {
