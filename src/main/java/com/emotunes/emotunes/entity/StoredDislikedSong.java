@@ -2,6 +2,7 @@ package com.emotunes.emotunes.entity;
 
 import com.emotunes.emotunes.enums.Emotion;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "disliked_song")
-public class StoredDislikedSong {
+@EqualsAndHashCode(callSuper = true)
+public class StoredDislikedSong extends BaseEntity {
 
     @Id
     private String id;

@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "song", indexes = {
         @Index(name = "unique_idx", columnList = "title, duration", unique = true)
 })
