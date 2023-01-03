@@ -7,6 +7,7 @@ import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.dto.UserDto;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
+import com.emotunes.emotunes.publisher.SongMetadataEventPublisher;
 import com.emotunes.emotunes.service.AdminService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,7 @@ import java.util.Objects;
 public class AdminServiceImpl implements AdminService {
 
     private final SongsDao songsDao;
-    private final KafkaHelper kafkaHelper;
-
+    private final SongMetadataEventPublisher songMetadataEventPublisher;
     private final UserDao userDao;
 
     @Override
@@ -61,7 +61,8 @@ public class AdminServiceImpl implements AdminService {
                             ).toLocalTime().toString())
                             .build();
 
-            kafkaHelper.publish("ABC", songMetadata);
+            songMetadataEventPublisher.publish(songMetadata);
+
         } catch (Exception e) {
             log.info("Error while getting audio details! ", e);
             return ResponseEntity.internalServerError().body("Song processing failed!");
