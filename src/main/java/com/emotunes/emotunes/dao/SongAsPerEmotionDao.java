@@ -1,5 +1,6 @@
 package com.emotunes.emotunes.dao;
 
+import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSongAsPerEmotion;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.repository.SongAsPerEmotionRepository;
@@ -20,13 +21,14 @@ public class SongAsPerEmotionDao {
     private final SongRepository songRepository;
 
     public void save(
-            String userId, String songTitle,
-            LocalTime duration, Emotion correctEmotion) {
+            String userId, SongMetadata songMetadata, Emotion correctEmotion) {
         songAsPerEmotionRepository.save(
                 StoredSongAsPerEmotion.builder()
                         .id(IdGenerationUtil.getRandomId())
                         .user(userRepository.getReferenceById(userId))
-                        .song(songRepository.getByTitleAndDuration(songTitle, duration))
+                        .song(songRepository.getByTitleAndDuration(
+                                songMetadata.getTitle(),
+                                LocalTime.parse(songMetadata.getDuration())))
                         .correctEmotion(correctEmotion)
                         .build());
     }
