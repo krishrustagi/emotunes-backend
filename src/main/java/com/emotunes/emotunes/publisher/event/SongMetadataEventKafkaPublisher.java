@@ -1,7 +1,8 @@
-package com.emotunes.emotunes.publisher;
+package com.emotunes.emotunes.publisher.event;
 
 import com.emotunes.emotunes.config.KafkaHelper;
 import com.emotunes.emotunes.dto.SongMetadata;
+import com.emotunes.emotunes.publisher.SongMetadataEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

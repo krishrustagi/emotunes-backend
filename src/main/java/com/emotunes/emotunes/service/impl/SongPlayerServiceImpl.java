@@ -30,9 +30,11 @@ public class SongPlayerServiceImpl implements SongPlayerService {
     }
 
     @Override
-    public void songNotPerEmotion(
+    public ResponseEntity<String> songNotPerEmotion(
             String userId, String songTitle,
             LocalTime duration, Emotion correctEmotion) {
+
         songAsPerEmotionDao.save(userId, songTitle, duration, correctEmotion);
+        return ResponseEntity.ok("Emotion suggested successfully!");
     }
 }
