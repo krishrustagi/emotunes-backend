@@ -1,6 +1,7 @@
 package com.emotunes.emotunes.service;
 
 import com.emotunes.emotunes.dto.SongMetadata;
+import com.emotunes.emotunes.dto.UserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,4 +12,6 @@ public interface AdminService {
     void persistSong(SongMetadata songMetadata);
 
     ResponseEntity<String> addSong(MultipartFile songFile) throws IOException;
+
+    void registerUser(UserDto userDto);
 }

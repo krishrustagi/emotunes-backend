@@ -21,7 +21,7 @@ public class SongsDao {
         List<StoredSong> songList = songRepository.findAll();
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongMetadata(storedSong)));
         return songMetadataList;
     }
 
@@ -29,7 +29,7 @@ public class SongsDao {
         List<StoredSong> songList = songRepository.findAllByTitleStartsWith(prefix);
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongMetadata(storedSong)));
         return songMetadataList;
     }
 
@@ -37,7 +37,7 @@ public class SongsDao {
         List<StoredSong> songList = songRepository.findAllByEmotion(emotion.name());
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongDto(storedSong)));
+        songList.forEach(storedSong -> songMetadataList.add(SongMapper.toSongMetadata(storedSong)));
         return songMetadataList;
     }
 

@@ -21,23 +21,26 @@ public class SongPlayerController {
 
     private final SongPlayerService songPlayerService;
 
-    @PostMapping("/like")
-    @ApiOperation(("Like the song"))
-    public ResponseEntity<String> likeCurrentSong(
-            @RequestParam("user_id") String userId,
-            @RequestParam("song_title") String songTitle,
-            @RequestParam("song_duration") String duration) {
-        songPlayerService.likeCurrentSong(userId, songTitle, LocalTime.parse(duration));
-        return ResponseEntity.ok("Song Liked");
+    @PostMapping("/user_song_response")
+    @ApiOperation(("user Response to the song"))
+    public ResponseEntity<String> userSongResponse(
+            @RequestParam(value = "user_id", required = false) String userId,
+            @RequestParam(value = "song_title", required = false) String songTitle,
+            @RequestParam(value = "song_duration", required = false) String duration,
+            @RequestParam("is_liked") boolean isLiked) {
+        return songPlayerService.userSongResponse(
+                userId, songTitle, LocalTime.parse(duration), isLiked);
     }
 
-    @PostMapping("/dislike")
-    @ApiOperation(("Dislike the song"))
-    public ResponseEntity<String> dislikeCurrentSong(
-            @RequestParam("user_id") String userId,
-            @RequestParam("song_id") String songId,
-            @RequestParam("emotion") Emotion correctEmotion) {
-        songPlayerService.dislikeCurrentSong(userId, songId, correctEmotion);
-        return ResponseEntity.ok("Song DisLiked");
+    @PostMapping("/song_not_per_emotion")
+    @ApiOperation("Song not per emotion")
+    public ResponseEntity<String> songNotPerEmotion(
+            @RequestParam(value = "user_id", required = false) String userId,
+            @RequestParam(value = "song_title", required = false) String songTitle,
+            @RequestParam(value = "song_duration", required = false) String duration,
+            @RequestParam("correct_emotion") Emotion correctEmotion) {
+        songPlayerService.songNotPerEmotion(
+                userId, songTitle, LocalTime.parse(duration), correctEmotion);
+        return ResponseEntity.ok("Emotion fixed!");
     }
 }
