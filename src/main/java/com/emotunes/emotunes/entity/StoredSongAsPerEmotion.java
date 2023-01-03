@@ -12,9 +12,9 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Setter
-@Table(name = "disliked_song")
+@Table(name = "song_as_per_emotion")
 @EqualsAndHashCode(callSuper = true)
-public class StoredDislikedSong extends BaseEntity {
+public class StoredSongAsPerEmotion extends BaseEntity {
 
     @Id
     private String id;

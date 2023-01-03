@@ -11,10 +11,11 @@ import java.time.LocalTime;
 @UtilityClass
 public class SongMapper {
 
-    public static SongMetadata toSongDto(StoredSong storedSong) {
+    public static SongMetadata toSongMetadata(StoredSong storedSong) {
         return SongMetadata.builder()
                 .title(storedSong.getTitle())
                 .duration(storedSong.getDuration().toString())
+                .emotion(storedSong.getEmotion())
                 .build();
     }
 

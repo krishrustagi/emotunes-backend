@@ -1,6 +1,6 @@
 package com.emotunes.emotunes.service.impl;
 
-import com.emotunes.emotunes.dao.LikedSongsDao;
+import com.emotunes.emotunes.dao.UserSongResponseDao;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
@@ -15,7 +15,7 @@ import java.util.List;
 public class SongServiceImpl implements SongService {
 
     private final SongsDao songsDao;
-    private final LikedSongsDao likedSongsDao;
+    private final UserSongResponseDao userSongResponseDao;
 
     @Override
     public List<SongMetadata> getAllSongs() {
@@ -34,6 +34,6 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public List<SongMetadata> getLikedSongs(String userId) {
-        return likedSongsDao.getAllLikedSongs(userId);
+        return userSongResponseDao.getAllLikedSongs(userId);
     }
 }

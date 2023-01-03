@@ -2,9 +2,13 @@ package com.emotunes.emotunes.service.impl;
 
 import com.emotunes.emotunes.config.KafkaHelper;
 import com.emotunes.emotunes.dao.SongsDao;
+import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dto.SongMetadata;
+import com.emotunes.emotunes.dto.UserDto;
+import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.AdminService;
+import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
@@ -28,6 +32,8 @@ public class AdminServiceImpl implements AdminService {
 
     private final SongsDao songsDao;
     private final KafkaHelper kafkaHelper;
+
+    private final UserDao userDao;
 
     @Override
     public void persistSong(SongMetadata songMetadata) {
@@ -64,6 +70,17 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return ResponseEntity.ok().body("Song processing triggered successfully!");
+    }
+
+    @Override
+    public void registerUser(UserDto userDto) {
+        StoredUser storedUser =
+                StoredUser.builder()
+                        .id(IdGenerationUtil.getRandomId())
+                        .userName(userDto.getUserName())
+                        .build();
+
+        userDao.save(storedUser);
     }
 
     private File convert(MultipartFile file) throws IOException {
