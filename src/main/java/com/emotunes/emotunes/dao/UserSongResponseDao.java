@@ -25,12 +25,14 @@ public class UserSongResponseDao {
     private final SongRepository songRepository;
 
     public void save(
-            String userId, String songTitle, LocalTime duration, boolean isLiked) {
+            String userId, SongMetadata songMetadata, boolean isLiked) {
         userSongResponseRepository.save(
                 StoredUserSongResponse.builder()
                         .id(IdGenerationUtil.getRandomId())
                         .user(userRepository.getReferenceById(userId))
-                        .song(songRepository.getByTitleAndDuration(songTitle, duration))
+                        .song(songRepository.getByTitleAndDuration(
+                                songMetadata.getTitle(),
+                                LocalTime.parse(songMetadata.getDuration())))
                         .isLiked(isLiked)
                         .build());
     }
