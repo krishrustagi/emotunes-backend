@@ -39,8 +39,7 @@ public class SongPlayerController {
             @RequestParam(value = "song_title", required = false) String songTitle,
             @RequestParam(value = "song_duration", required = false) String duration,
             @RequestParam("correct_emotion") Emotion correctEmotion) {
-        songPlayerService.songNotPerEmotion(
+        return songPlayerService.songNotPerEmotion(
                 userId, songTitle, LocalTime.parse(duration), correctEmotion);
-        return ResponseEntity.ok("Emotion fixed!");
     }
 }

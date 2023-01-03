@@ -10,7 +10,7 @@ public interface SongPlayerService {
     ResponseEntity<String> userSongResponse(
             String userId, String songTitle, LocalTime duration, boolean isLiked);
 
-    void songNotPerEmotion(
+    ResponseEntity<String> songNotPerEmotion(
             String userId, String songTitle,
             LocalTime duration, Emotion correctEmotion);
 }
