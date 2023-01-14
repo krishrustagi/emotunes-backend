@@ -76,7 +76,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void registerUser(UserDto userDto) {
-        userDao.save(UserMapper.toEntity(userDto));
+        if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
+            userDao.save(UserMapper.toEntity(userDto));
+        }
     }
 
     private File convert(MultipartFile file) throws IOException {
