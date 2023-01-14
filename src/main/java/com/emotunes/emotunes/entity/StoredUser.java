@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Data
@@ -14,11 +15,17 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "user")
+@Table(name = "user",
+        indexes =
+        @Index(name = "unique_idx", columnList = "emailId"))
 public class StoredUser extends BaseEntity {
 
     @Id
     private String id;
 
-    private String userName;
+    private String emailId;
+
+    private String firstName;
+
+    private String lastName;
 }

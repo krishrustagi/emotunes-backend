@@ -7,6 +7,7 @@ import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.dto.UserDto;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
+import com.emotunes.emotunes.mapper.UserMapper;
 import com.emotunes.emotunes.publisher.SongMetadataEventPublisher;
 import com.emotunes.emotunes.service.AdminService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
@@ -75,13 +76,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void registerUser(UserDto userDto) {
-        StoredUser storedUser =
-                StoredUser.builder()
-                        .id(IdGenerationUtil.getRandomId())
-                        .userName(userDto.getUserName())
-                        .build();
-
-        userDao.save(storedUser);
+        userDao.save(UserMapper.toEntity(userDto));
     }
 
     private File convert(MultipartFile file) throws IOException {
