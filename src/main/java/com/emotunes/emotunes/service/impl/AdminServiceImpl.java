@@ -36,6 +36,8 @@ public class AdminServiceImpl implements AdminService {
     private final SongMetadataEventPublisher songMetadataEventPublisher;
     private final UserDao userDao;
 
+    private final AdminService adminService;
+
     @Override
     public void persistSong(SongMetadata songMetadata) {
         // todo: getEmotion by predicting the song using Emotion.HAPPY for now
@@ -62,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
                             ).toLocalTime().toString())
                             .build();
 
-            songMetadataEventPublisher.publish(songMetadata);
+            adminService.persistSong(songMetadata);
 
         } catch (Exception e) {
             log.info("Error while getting audio details! ", e);
@@ -76,7 +78,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void registerUser(UserDto userDto) {
-        userDao.save(UserMapper.toEntity(userDto));
+        if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
+            userDao.save(UserMapper.toEntity(userDto));
+        }
     }
 
     private File convert(MultipartFile file) throws IOException {

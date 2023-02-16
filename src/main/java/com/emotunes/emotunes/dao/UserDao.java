@@ -14,4 +14,8 @@ public class UserDao {
     public void save(StoredUser storedUser) {
         userRepository.save(storedUser);
     }
+
+    public StoredUser findByEmailId(String emailId) {
+        return userRepository.findByEmailId(emailId);
+    }
 }
