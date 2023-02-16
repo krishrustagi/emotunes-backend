@@ -36,6 +36,8 @@ public class AdminServiceImpl implements AdminService {
     private final SongMetadataEventPublisher songMetadataEventPublisher;
     private final UserDao userDao;
 
+    private final AdminService adminService;
+
     @Override
     public void persistSong(SongMetadata songMetadata) {
         // todo: getEmotion by predicting the song using Emotion.HAPPY for now
@@ -62,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
                             ).toLocalTime().toString())
                             .build();
 
-            songMetadataEventPublisher.publish(songMetadata);
+            adminService.persistSong(songMetadata);
 
         } catch (Exception e) {
             log.info("Error while getting audio details! ", e);
