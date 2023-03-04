@@ -5,6 +5,8 @@ import com.emotunes.emotunes.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class UserDao {
@@ -17,5 +19,9 @@ public class UserDao {
 
     public StoredUser findByEmailId(String emailId) {
         return userRepository.findByEmailId(emailId);
+    }
+
+    public List<StoredUser> findAll() {
+        return userRepository.findAll();
     }
 }

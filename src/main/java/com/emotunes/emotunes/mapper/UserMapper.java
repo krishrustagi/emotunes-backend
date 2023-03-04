@@ -12,8 +12,7 @@ public class UserMapper {
         return StoredUser.builder()
                 .id(IdGenerationUtil.getRandomId())
                 .emailId(userDto.getEmailId())
-                .firstName(userDto.getFirstName())
-                .lastName(userDto.getLastName())
+                .name(userDto.getName())
                 .build();
     }
 }
