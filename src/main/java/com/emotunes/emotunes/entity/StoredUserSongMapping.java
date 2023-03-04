@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "user_song_emotion_mapping", indexes = {
-        @Index(name = "unique_idx", columnList = "user, song, emotion", unique = true)
+        @Index(name = "unique_idx", columnList = "user_id, song_id", unique = true)
 })
 public class StoredUserSongMapping extends BaseEntity {
 

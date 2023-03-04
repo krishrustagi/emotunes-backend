@@ -23,12 +23,13 @@ public class SongPlayerController {
         // todo: play song
     }
 
-    @PostMapping("/liked")
-    @ApiOperation(("Liked"))
+    @PostMapping("/is_liked")
+    @ApiOperation(("Is liked?"))
     public ResponseEntity<String> userSongResponse(
             @RequestParam(value = "user_id") String userId,
-            @RequestBody(required = false) SongMetadata songMetadata) {
-        return songPlayerService.liked(userId, songMetadata);
+            @RequestBody SongMetadata songMetadata,
+            @RequestParam(value = "liked") boolean isLiked) {
+        return songPlayerService.liked(userId, songMetadata, isLiked);
     }
 
     @PostMapping("/song_not_per_emotion")

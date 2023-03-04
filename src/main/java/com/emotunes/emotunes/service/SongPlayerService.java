@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 public interface SongPlayerService {
 
     ResponseEntity<String> liked(
-            String userId, SongMetadata songMetadata);
+            String userId, SongMetadata songMetadata, boolean isLiked);
 
     ResponseEntity<String> songNotPerEmotion(
             String userId, SongMetadata songMetadata, Emotion correctEmotion);

@@ -20,8 +20,8 @@ public class SongPlayerServiceImpl implements SongPlayerService {
     @Override
     @Transactional
     public ResponseEntity<String> liked(
-            String userId, SongMetadata songMetadata) {
-        userSongMappingDao.songLiked(userId, songMetadata);
+            String userId, SongMetadata songMetadata, boolean isLiked) {
+        userSongMappingDao.songLiked(userId, songMetadata, isLiked);
 
         return ResponseEntity.ok("Song Liked!");
     }

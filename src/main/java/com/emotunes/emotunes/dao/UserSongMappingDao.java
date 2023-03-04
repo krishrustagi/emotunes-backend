@@ -72,10 +72,10 @@ public class UserSongMappingDao {
         return songMetadataList;
     }
 
-    public void songLiked(String userId, SongMetadata songMetadata) {
+    public void songLiked(String userId, SongMetadata songMetadata, boolean isLiked) {
         StoredSong song = songRepository.getByTitleAndDuration(songMetadata.getTitle(),
                 LocalTime.parse(songMetadata.getDuration()));
 
-        userSongMappingRepository.updateSongToLikedForUser(userRepository.getReferenceById(userId), song);
+        userSongMappingRepository.updateSongToLikedForUser(userRepository.getReferenceById(userId), song, isLiked);
     }
 }

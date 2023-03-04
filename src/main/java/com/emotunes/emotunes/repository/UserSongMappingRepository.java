@@ -41,10 +41,10 @@ public interface UserSongMappingRepository
     @Modifying
     @Query(value =
             "update user_song_emotion_mapping"
-                    + " set is_liked = 1"
+                    + " set is_liked = ?3"
                     + " where user_id = ?1"
                     + " and song_id = ?2",
-        nativeQuery = true
+            nativeQuery = true
     )
-    void updateSongToLikedForUser(StoredUser referenceById, StoredSong song);
+    void updateSongToLikedForUser(StoredUser referenceById, StoredSong song, boolean isLiked);
 }
