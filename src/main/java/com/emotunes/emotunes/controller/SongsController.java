@@ -24,22 +24,24 @@ public class SongsController {
 
     @GetMapping("/all")
     @ApiOperation("Get All Songs") // todo: add limit
-    public ResponseEntity<List<SongMetadata>> getAllSongs() {
-        return ResponseEntity.ok(songService.getAllSongs());
+    public ResponseEntity<List<SongMetadata>> getAllSongs(
+            @RequestParam(value = "user_id") String userId) {
+        return ResponseEntity.ok(songService.getAllSongs(userId));
     }
 
     @GetMapping("/search")
     @ApiOperation("Search songs by Prefix")
     public ResponseEntity<List<SongMetadata>> getSongsByPrefix( // todo: edit distance
-            @RequestParam("prefix") String prefix) {
-        return ResponseEntity.ok(songService.getSongsByPrefix(prefix));
+            @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix) {
+        return ResponseEntity.ok(songService.getSongsByPrefix(userId, prefix));
     }
 
     @GetMapping("/emotion")
     @ApiOperation("Get Songs By Emotion") // todo: add paging
     public ResponseEntity<List<SongMetadata>> getSongsByEmotion(
-            @RequestParam(value = "emotion", required = false) Emotion emotion) {
-        return ResponseEntity.ok(songService.getSongsByEmotion(emotion));
+            @RequestParam(value = "user_id") String userId,
+            @RequestParam(value = "emotion") Emotion emotion) {
+        return ResponseEntity.ok(songService.getSongsByEmotion(userId, emotion));
     }
 
     @GetMapping("liked")

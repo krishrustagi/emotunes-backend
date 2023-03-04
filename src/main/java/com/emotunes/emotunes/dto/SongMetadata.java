@@ -15,4 +15,6 @@ public class SongMetadata {
     private String title;
 
     private String duration;
+
+    private Emotion emotion;
 }
