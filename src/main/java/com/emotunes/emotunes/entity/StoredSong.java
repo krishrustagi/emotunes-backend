@@ -24,8 +24,7 @@ public class StoredSong extends BaseEntity {
 
     private String title;
 
-    @Enumerated(EnumType.STRING)
-    private Emotion emotion;
-
     private LocalTime duration;
+
+    // todo: add thumbnail
 }

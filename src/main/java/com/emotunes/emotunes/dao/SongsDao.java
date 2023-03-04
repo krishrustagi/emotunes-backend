@@ -4,7 +4,10 @@ import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.mapper.SongMapper;
+import com.emotunes.emotunes.mapper.UserSongMappingMapper;
 import com.emotunes.emotunes.repository.SongRepository;
+import com.emotunes.emotunes.repository.UserRepository;
+import com.emotunes.emotunes.repository.UserSongEmotionMappingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +44,7 @@ public class SongsDao {
         return songMetadataList;
     }
 
-    public void addSong(SongMetadata songMetadata, Emotion emotion) {
-        songRepository.save(SongMapper.toSongEntity(songMetadata, emotion));
+    public String addSong(SongMetadata songMetadata) {
+        return songRepository.save(SongMapper.toSongEntity(songMetadata)).getId();
     }
 }

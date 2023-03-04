@@ -15,16 +15,14 @@ public class SongMapper {
         return SongMetadata.builder()
                 .title(storedSong.getTitle())
                 .duration(storedSong.getDuration().toString())
-                .emotion(storedSong.getEmotion())
                 .build();
     }
 
-    public static StoredSong toSongEntity(SongMetadata songMetadata, Emotion emotion) {
+    public static StoredSong toSongEntity(SongMetadata songMetadata) {
         return StoredSong.builder()
                 .id(IdGenerationUtil.getRandomId())
                 .title(songMetadata.getTitle())
                 .duration(LocalTime.parse(songMetadata.getDuration()))
-                .emotion(emotion)
                 .build();
     }
 }

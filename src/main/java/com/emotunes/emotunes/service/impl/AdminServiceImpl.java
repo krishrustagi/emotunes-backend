@@ -1,16 +1,14 @@
 package com.emotunes.emotunes.service.impl;
 
-import com.emotunes.emotunes.config.KafkaHelper;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
+import com.emotunes.emotunes.dao.UserSongEmotionMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.dto.UserDto;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.mapper.UserMapper;
-import com.emotunes.emotunes.publisher.SongMetadataEventPublisher;
 import com.emotunes.emotunes.service.AdminService;
-import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
@@ -25,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -33,14 +32,8 @@ import java.util.Objects;
 public class AdminServiceImpl implements AdminService {
 
     private final SongsDao songsDao;
-    private final SongMetadataEventPublisher songMetadataEventPublisher;
     private final UserDao userDao;
-
-    @Override
-    public void persistSong(SongMetadata songMetadata) {
-        // todo: getEmotion by predicting the song using Emotion.HAPPY for now
-        songsDao.addSong(songMetadata, Emotion.HAPPY);
-    }
+    private final UserSongEmotionMappingDao userSongEmotionMappingDao;
 
     @Override
     public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
@@ -62,7 +55,15 @@ public class AdminServiceImpl implements AdminService {
                             ).toLocalTime().toString())
                             .build();
 
-            persistSong(songMetadata);
+            String songId = persistSong(songMetadata);
+
+            List<StoredUser> userList = userDao.findAll();
+            userList.forEach(
+                    user -> {
+                        // todo: predict song by model id (userId);
+                        persistUserSongEmotionMapping(user.getId(), songId, Emotion.HAPPY);
+                    }
+            );
 
         } catch (Exception e) {
             log.info("Error while getting audio details! ", e);
@@ -78,6 +79,7 @@ public class AdminServiceImpl implements AdminService {
     public void registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
             userDao.save(UserMapper.toEntity(userDto));
+            // todo: add model space and rename model as the userId
         }
     }
 
@@ -88,5 +90,15 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return convFile;
+    }
+
+    private String persistSong(SongMetadata songMetadata) {
+        // todo: save file with the song id;
+        return songsDao.addSong(songMetadata);
+    }
+
+    private void persistUserSongEmotionMapping(
+            String userId, String songId, Emotion emotion) {
+        userSongEmotionMappingDao.addSong(userId, songId, emotion);
     }
 }

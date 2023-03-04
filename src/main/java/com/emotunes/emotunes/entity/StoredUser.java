@@ -25,7 +25,5 @@ public class StoredUser extends BaseEntity {
 
     private String emailId;
 
-    private String firstName;
-
-    private String lastName;
+    private String name;
 }
