@@ -23,7 +23,7 @@ public interface UserSongMappingRepository
     List<StoredUserSongMapping> findAllSongsOfUser(StoredUser storedUser);
 
     @Query(value =
-            "select song from user_song_emotion_mapping"
+            "select * from user_song_emotion_mapping"
                     + " where user_id = ?1"
                     + " and emotion = ?2",
             nativeQuery = true
@@ -31,7 +31,7 @@ public interface UserSongMappingRepository
     List<StoredUserSongMapping> findAllSongsWithEmotionOfUser(StoredUser storedUser, String emotion);
 
     @Query(value =
-            "select song from user_song_emotion_mapping"
+            "select * from user_song_emotion_mapping"
                     + " where user_id = ?1"
                     + " and is_liked = 1",
             nativeQuery = true
