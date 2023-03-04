@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
-
 @RestController
 @RequestMapping("/v1/song_player")
 @Api("Song Player Controller")
@@ -19,20 +17,18 @@ public class SongPlayerController {
 
     private final SongPlayerService songPlayerService;
 
-    @PostMapping("play_song")
-    @ApiOperation("Play Song")
-    public void playSong(@RequestBody(required = false) SongMetadata songMetadata) {
+    @PostMapping("/play")
+    @ApiOperation("Play")
+    public void play(@RequestBody(required = false) SongMetadata songMetadata) {
         // todo: play song
     }
 
-    @PostMapping("/user_song_response")
-    @ApiOperation(("user Response to the song"))
+    @PostMapping("/liked")
+    @ApiOperation(("Liked"))
     public ResponseEntity<String> userSongResponse(
-            @RequestParam(value = "user_id", required = false) String userId,
-            @RequestBody(required = false) SongMetadata songMetadata,
-            @RequestParam("is_liked") boolean isLiked) {
-        return songPlayerService.userSongResponse(
-                userId, songMetadata, isLiked);
+            @RequestParam(value = "user_id") String userId,
+            @RequestBody(required = false) SongMetadata songMetadata) {
+        return songPlayerService.liked(userId, songMetadata);
     }
 
     @PostMapping("/song_not_per_emotion")

@@ -1,33 +1,29 @@
 package com.emotunes.emotunes.service.impl;
 
 import com.emotunes.emotunes.dao.SongAsPerEmotionDao;
-import com.emotunes.emotunes.dao.UserSongResponseDao;
+import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.SongPlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalTime;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class SongPlayerServiceImpl implements SongPlayerService {
 
-    private final UserSongResponseDao userSongResponseDao;
+    private final UserSongMappingDao userSongMappingDao;
     private final SongAsPerEmotionDao songAsPerEmotionDao;
 
     @Override
-    public ResponseEntity<String> userSongResponse(
-            String userId, SongMetadata songMetadata, boolean isLiked) {
-        userSongResponseDao.save(userId, songMetadata, isLiked);
+    @Transactional
+    public ResponseEntity<String> liked(
+            String userId, SongMetadata songMetadata) {
+        userSongMappingDao.songLiked(userId, songMetadata);
 
-        if (isLiked) {
-            return ResponseEntity.ok("Song Liked!");
-        }
-
-        return ResponseEntity.ok("Song Disliked!");
+        return ResponseEntity.ok("Song Liked!");
     }
 
     @Override

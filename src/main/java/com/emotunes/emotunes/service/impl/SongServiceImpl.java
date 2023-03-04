@@ -1,7 +1,6 @@
 package com.emotunes.emotunes.service.impl;
 
-import com.emotunes.emotunes.dao.UserSongResponseDao;
-import com.emotunes.emotunes.dao.SongsDao;
+import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.SongService;
@@ -14,26 +13,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SongServiceImpl implements SongService {
 
-    private final SongsDao songsDao;
-    private final UserSongResponseDao userSongResponseDao;
+    private final UserSongMappingDao userSongMappingDao;
 
     @Override
-    public List<SongMetadata> getAllSongs() {
-        return songsDao.getAll();
+    public List<SongMetadata> getAllSongs(String userId) {
+        return userSongMappingDao.getAll(userId);
     }
 
     @Override
-    public List<SongMetadata> getSongsByPrefix(String prefix) {
-        return songsDao.getSongsByPrefix(prefix);
+    public List<SongMetadata> getSongsByPrefix(String userId, String prefix) {
+        return userSongMappingDao.getSongsByPrefix(userId, prefix);
     }
 
     @Override
-    public List<SongMetadata> getSongsByEmotion(Emotion emotion) {
-        return songsDao.getSongsByEmotion(emotion);
+    public List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion) {
+        return userSongMappingDao.getSongsByEmotion(userId, emotion);
     }
 
     @Override
     public List<SongMetadata> getLikedSongs(String userId) {
-        return userSongResponseDao.getAllLikedSongs(userId);
+        return userSongMappingDao.getAllLikedSongs(userId);
     }
 }

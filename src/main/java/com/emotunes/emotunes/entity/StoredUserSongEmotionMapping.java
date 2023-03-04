@@ -16,7 +16,7 @@ import javax.persistence.*;
 @Table(name = "user_song_emotion_mapping", indexes = {
         @Index(name = "unique_idx", columnList = "user, song, emotion", unique = true)
 })
-public class StoredUserSongEmotionMapping extends BaseEntity {
+public class StoredUserSongMapping extends BaseEntity {
 
     @Id
     private String id;
@@ -31,4 +31,7 @@ public class StoredUserSongEmotionMapping extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Emotion emotion;
+
+    @Builder.Default
+    private boolean isLiked = false;
 }
