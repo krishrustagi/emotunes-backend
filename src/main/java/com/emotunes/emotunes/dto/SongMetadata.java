@@ -17,4 +17,7 @@ public class SongMetadata {
     private String duration;
 
     private Emotion emotion;
+
+    @Builder.Default
+    private boolean isLiked = false;
 }

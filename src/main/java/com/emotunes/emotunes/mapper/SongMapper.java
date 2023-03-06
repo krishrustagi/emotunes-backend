@@ -17,6 +17,7 @@ public class SongMapper {
                 .title(song.getSong().getTitle())
                 .duration(song.getSong().getDuration().toString())
                 .emotion(song.getEmotion())
+                .isLiked(song.isLiked())
                 .build();
     }
 
