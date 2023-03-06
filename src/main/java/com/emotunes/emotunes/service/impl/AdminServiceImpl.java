@@ -80,6 +80,7 @@ public class AdminServiceImpl implements AdminService {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
             userDao.save(UserMapper.toEntity(userDto));
             // todo: add model space and rename model as the userId
+            userSongMappingDao.addSongsForUser(userDto.getUserId());
         }
     }
 

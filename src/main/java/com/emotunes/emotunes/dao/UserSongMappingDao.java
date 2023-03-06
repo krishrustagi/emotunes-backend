@@ -78,4 +78,12 @@ public class UserSongMappingDao {
 
         userSongMappingRepository.updateSongToLikedForUser(userRepository.getReferenceById(userId), song, isLiked);
     }
+
+    public void addSongsForUser(String userId) {
+        List<StoredSong> songList = songRepository.findAll();
+        songList.forEach(song -> {
+            Emotion songEmotion = Emotion.HAPPY; // todo: predict song emotion
+            addSong(userId, song.getId(), songEmotion);
+        });
+    }
 }
