@@ -4,11 +4,9 @@ import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalTime;
-
 public interface SongPlayerService {
 
-    ResponseEntity<String> userSongResponse(
+    ResponseEntity<String> liked(
             String userId, SongMetadata songMetadata, boolean isLiked);
 
     ResponseEntity<String> songNotPerEmotion(

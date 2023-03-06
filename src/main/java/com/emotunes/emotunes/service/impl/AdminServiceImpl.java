@@ -2,7 +2,7 @@ package com.emotunes.emotunes.service.impl;
 
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
-import com.emotunes.emotunes.dao.UserSongEmotionMappingDao;
+import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.dto.UserDto;
 import com.emotunes.emotunes.entity.StoredUser;
@@ -33,7 +33,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final SongsDao songsDao;
     private final UserDao userDao;
-    private final UserSongEmotionMappingDao userSongEmotionMappingDao;
+    private final UserSongMappingDao userSongMappingDao;
 
     @Override
     public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
@@ -61,7 +61,7 @@ public class AdminServiceImpl implements AdminService {
             userList.forEach(
                     user -> {
                         // todo: predict song by model id (userId);
-                        persistUserSongEmotionMapping(user.getId(), songId, Emotion.HAPPY);
+                        persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
                     }
             );
 
@@ -97,8 +97,8 @@ public class AdminServiceImpl implements AdminService {
         return songsDao.addSong(songMetadata);
     }
 
-    private void persistUserSongEmotionMapping(
+    private void persistUserSongMapping(
             String userId, String songId, Emotion emotion) {
-        userSongEmotionMappingDao.addSong(userId, songId, emotion);
+        userSongMappingDao.addSong(userId, songId, emotion);
     }
 }
