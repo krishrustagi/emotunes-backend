@@ -10,7 +10,7 @@ public class UserMapper {
 
     public StoredUser toEntity(UserDto userDto) {
         return StoredUser.builder()
-                .id(IdGenerationUtil.getRandomId())
+                .id(userDto.getUserId())
                 .emailId(userDto.getEmailId())
                 .name(userDto.getName())
                 .build();
