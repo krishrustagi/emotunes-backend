@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface SongService {
 
-    List<SongMetadata> getAllSongs();
+    List<SongMetadata> getAllSongs(String userId);
 
-    List<SongMetadata> getSongsByPrefix(String prefix);
+    List<SongMetadata> getSongsByPrefix(String userId, String prefix);
 
-    List<SongMetadata> getSongsByEmotion(Emotion emotion);
+    List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion);
 
     List<SongMetadata> getLikedSongs(String userId);
 }
