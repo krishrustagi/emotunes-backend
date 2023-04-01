@@ -52,7 +52,7 @@ public interface UserSongMappingRepository
     void updateSongToLikedForUser(StoredUser referenceById, StoredSong song, boolean isLiked);
 
     @Query(value =
-            "select id from user_song_emotion_mapping order by id limit 1",
+            "select id from user_song_emotion_mapping order by id desc limit 1",
             nativeQuery = true
     )
     String getMaxId();
