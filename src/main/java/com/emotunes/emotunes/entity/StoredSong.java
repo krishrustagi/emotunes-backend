@@ -1,12 +1,11 @@
 package com.emotunes.emotunes.entity;
 
-import com.emotunes.emotunes.enums.Emotion;
 import lombok.*;
-import org.hibernate.type.BlobType;
-import org.hibernate.type.TextType;
 
-import javax.persistence.*;
-import java.sql.Blob;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.time.LocalTime;
 
 @Data
