@@ -28,8 +28,8 @@ public interface UserSongMappingRepository
             "select * from user_song_emotion_mapping"
                     + " where user_id = ?1"
                     + " id < ?2 and "
-                    + " and emotion = ?2 "
-                    + " limit ?3",
+                    + " and emotion = ?3 "
+                    + " limit ?4",
             nativeQuery = true
     )
     List<StoredUserSongMapping> findNextPageOfSongsWithEmotionOfUser(StoredUser storedUser, String lastFetchedId, String emotion, int pageSize);
