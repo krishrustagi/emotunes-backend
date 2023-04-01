@@ -22,17 +22,19 @@ public class SongsController {
 
     private final SongService songService;
 
+    private static final int NUMBER_OF_SONGS_TO_FETCH = 10;
+
     @GetMapping("/all")
     @ApiOperation("Get All Songs")
     public ResponseEntity<List<SongMetadata>> getAllSongs(
             @RequestParam(value = "user_id") String userId,
             @RequestParam(value = "last_fetched_id") String lastFetchedId) {
-        return ResponseEntity.ok(songService.getNextPageOfSongsFromAllCategories(userId, lastFetchedId, 10));
+        return ResponseEntity.ok(songService.getNextPageOfSongsFromAllCategories(userId, lastFetchedId, NUMBER_OF_SONGS_TO_FETCH));
     }
 
     @GetMapping("/search")
-    @ApiOperation("Search songs by Prefix")
-    public ResponseEntity<List<SongMetadata>> getSongsByPrefix( // todo: edit distance
+    @ApiOperation("Search songs by Prefix")// todo: edit distance
+    public ResponseEntity<List<SongMetadata>> getSongsByPrefix(
             @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix) {
         return ResponseEntity.ok(songService.getSongsByPrefix(userId, prefix));
     }
@@ -43,7 +45,8 @@ public class SongsController {
             @RequestParam(value = "user_id") String userId,
             @RequestParam(value = "last_fetched_id") String lastFetchedId,
             @RequestParam(value = "emotion") Emotion emotion) {
-        return ResponseEntity.ok(songService.getNextPageOfSongsByEmotion(userId, lastFetchedId, emotion, 10));
+        return ResponseEntity.ok(songService.getNextPageOfSongsByEmotion(userId, lastFetchedId, emotion,
+                NUMBER_OF_SONGS_TO_FETCH));
     }
 
     @GetMapping("liked")
@@ -51,7 +54,7 @@ public class SongsController {
     public ResponseEntity<List<SongMetadata>> getLikedSongs(
             @RequestParam("user_id") String userId,
             @RequestParam("last_fetched_id") String lastFetchedId) {
-        return ResponseEntity.ok(songService.getNextPageOfLikedSongs(userId, lastFetchedId, 10));
+        return ResponseEntity.ok(songService.getNextPageOfLikedSongs(userId, lastFetchedId, NUMBER_OF_SONGS_TO_FETCH));
     }
 
     // todo: show liked songs based on emotions
