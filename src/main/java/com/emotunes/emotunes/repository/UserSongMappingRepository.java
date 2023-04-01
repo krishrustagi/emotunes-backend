@@ -24,7 +24,7 @@ public interface UserSongMappingRepository
     List<StoredUserSongMapping> findNextPageOfSongsFromAllCategory(StoredUser storedUser, String lastFetchedId, int pageSize);
 
     @Query(value =
-            "select * from user_song_emotion_mapping order by id "
+            "select * from user_song_emotion_mapping "
                     + " where user_id = ?1 and "
                     + " id < ?2 and "
                     + " emotion = ?3 order by id desc limit ?4",
@@ -33,7 +33,7 @@ public interface UserSongMappingRepository
     List<StoredUserSongMapping> findNextPageOfSongsWithEmotionOfUser(StoredUser storedUser, String lastFetchedId, String emotion, int pageSize);
 
     @Query(value =
-            "select * from user_song_emotion_mapping order by id "
+            "select * from user_song_emotion_mapping "
                     + " where user_id = ?1 and "
                     + " id < ?2 and "
                     + " is_liked = 1 order by id desc limit ?3",
