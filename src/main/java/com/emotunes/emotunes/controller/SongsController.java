@@ -23,10 +23,11 @@ public class SongsController {
     private final SongService songService;
 
     @GetMapping("/all")
-    @ApiOperation("Get All Songs") // todo: add limit
+    @ApiOperation("Get All Songs")
     public ResponseEntity<List<SongMetadata>> getAllSongs(
-            @RequestParam(value = "user_id") String userId) {
-        return ResponseEntity.ok(songService.getAllSongs(userId));
+            @RequestParam(value = "user_id") String userId,
+            @RequestParam(value = "last_fetched_id") String lastFetchedId) {
+        return ResponseEntity.ok(songService.getNextPageOfSongsFromAllCategories(userId, lastFetchedId, 10));
     }
 
     @GetMapping("/search")
@@ -40,15 +41,17 @@ public class SongsController {
     @ApiOperation("Get Songs By Emotion") // todo: add paging
     public ResponseEntity<List<SongMetadata>> getSongsByEmotion(
             @RequestParam(value = "user_id") String userId,
+            @RequestParam(value = "last_fetched_id") String lastFetchedId,
             @RequestParam(value = "emotion") Emotion emotion) {
-        return ResponseEntity.ok(songService.getSongsByEmotion(userId, emotion));
+        return ResponseEntity.ok(songService.getNextPageOfSongsByEmotion(userId, lastFetchedId, emotion, 10));
     }
 
     @GetMapping("liked")
     @ApiOperation("Get All liked songs")
-    public ResponseEntity<List<SongMetadata>> getLikedSongs( // todo: add paging
-            @RequestParam("user_id") String userId) {
-        return ResponseEntity.ok(songService.getLikedSongs(userId));
+    public ResponseEntity<List<SongMetadata>> getLikedSongs(
+            @RequestParam("user_id") String userId,
+            @RequestParam("last_fetched_id") String lastFetchedId) {
+        return ResponseEntity.ok(songService.getNextPageOfLikedSongs(userId, lastFetchedId, 10));
     }
 
     // todo: show liked songs based on emotions

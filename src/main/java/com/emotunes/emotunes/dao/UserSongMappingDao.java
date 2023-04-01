@@ -30,9 +30,10 @@ public class UserSongMappingDao {
                         songRepository.getReferenceById(songId), emotion));
     }
 
-    public List<SongMetadata> getAll(String userId) {
+    public List<SongMetadata> getNextPageOfSongsFromAllCategory(String userId, String lastFetchedId, int pageSize) {
         List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllSongsOfUser(userRepository.getReferenceById(userId));
+                userSongMappingRepository.findNextPageOfSongsFromAllCategory(userRepository.getReferenceById(userId),
+                        lastFetchedId, pageSize);
 
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
@@ -41,8 +42,8 @@ public class UserSongMappingDao {
     }
 
     public List<SongMetadata> getSongsByPrefix(String userId, String prefix) {
-        List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllSongsOfUser(userRepository.getReferenceById(userId));
+        List<StoredUserSongMapping> songList = new ArrayList<>(); //todo
+//                userSongMappingRepository.findNextPageOfSongsFromAllCategory(userRepository.getReferenceById(userId));
 
         // todo: changes for finding using prefix
         List<SongMetadata> songMetadataList = new ArrayList<>();
@@ -51,10 +52,10 @@ public class UserSongMappingDao {
         return songMetadataList;
     }
 
-    public List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion) {
+    public List<SongMetadata> getNextPageOfSongsByEmotion(String userId, String lastFetchedId, Emotion emotion, int pageSize) {
         List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllSongsWithEmotionOfUser(userRepository.getReferenceById(userId),
-                        emotion.name());
+                userSongMappingRepository.findNextPageOfSongsWithEmotionOfUser(userRepository.getReferenceById(userId),
+                        lastFetchedId, emotion.name(), pageSize);
 
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
@@ -62,9 +63,10 @@ public class UserSongMappingDao {
         return songMetadataList;
     }
 
-    public List<SongMetadata> getAllLikedSongs(String userId) {
+    public List<SongMetadata> getNextPageOfLikedSongs(String userId, String lastFetchedId, int pageSize) {
         List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllLikedSongsOfUser(userRepository.getReferenceById(userId));
+                userSongMappingRepository.findNextPageOfLikedSongsOfUser(userRepository.getReferenceById(userId),
+                        lastFetchedId, pageSize);
 
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
@@ -77,6 +79,7 @@ public class UserSongMappingDao {
                 LocalTime.parse(songMetadata.getDuration()));
 
         userSongMappingRepository.updateSongToLikedForUser(userRepository.getReferenceById(userId), song, isLiked);
+        //todo why just did not update by JPA??
     }
 
     public void addSongsForUser(String userId) {
@@ -85,5 +88,9 @@ public class UserSongMappingDao {
             Emotion songEmotion = Emotion.HAPPY; // todo: predict song emotion
             addSong(userId, song.getId(), songEmotion);
         });
+    }
+
+    public String getMaxId() {
+        return userSongMappingRepository.getMaxId();
     }
 }

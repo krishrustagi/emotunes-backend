@@ -17,26 +17,32 @@ public interface UserSongMappingRepository
 
     @Query(value =
             "select * from user_song_emotion_mapping"
-                    + " where user_id = ?1",
+                    + " where user_id = ?1 and "
+                    + "  id < ?2 and "
+                    + " limit ?3",
             nativeQuery = true
     )
-    List<StoredUserSongMapping> findAllSongsOfUser(StoredUser storedUser);
+    List<StoredUserSongMapping> findNextPageOfSongsFromAllCategory(StoredUser storedUser, String lastFetchedId, int pageSize);
 
     @Query(value =
             "select * from user_song_emotion_mapping"
                     + " where user_id = ?1"
-                    + " and emotion = ?2",
+                    + " id < ?2 and "
+                    + " and emotion = ?2 "
+                    + " limit ?3",
             nativeQuery = true
     )
-    List<StoredUserSongMapping> findAllSongsWithEmotionOfUser(StoredUser storedUser, String emotion);
+    List<StoredUserSongMapping> findNextPageOfSongsWithEmotionOfUser(StoredUser storedUser, String lastFetchedId, String emotion, int pageSize);
 
     @Query(value =
             "select * from user_song_emotion_mapping"
                     + " where user_id = ?1"
-                    + " and is_liked = 1",
+                    + " id < ?2 and "
+                    + " and is_liked = 1 "
+                    + " limit ?3",
             nativeQuery = true
     )
-    List<StoredUserSongMapping> findAllLikedSongsOfUser(StoredUser storedUser);
+    List<StoredUserSongMapping> findNextPageOfLikedSongsOfUser(StoredUser storedUser, String lastFetchedId, int pageSize);
 
     @Modifying
     @Query(value =
@@ -47,4 +53,10 @@ public interface UserSongMappingRepository
             nativeQuery = true
     )
     void updateSongToLikedForUser(StoredUser referenceById, StoredSong song, boolean isLiked);
+
+    @Query(value =
+            "select id from user_song_emotion_mapping order by id limit 1",
+            nativeQuery = true
+    )
+    String getMaxId();
 }

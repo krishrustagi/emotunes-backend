@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface SongService {
 
-    List<SongMetadata> getAllSongs(String userId);
+    List<SongMetadata> getNextPageOfSongsFromAllCategories(String userId, String lastFetchedId, int pageSize);
 
     List<SongMetadata> getSongsByPrefix(String userId, String prefix);
 
-    List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion);
+    List<SongMetadata> getNextPageOfSongsByEmotion(String userId, String lastFetchedId, Emotion emotion, int pageSize);
 
-    List<SongMetadata> getLikedSongs(String userId);
+    List<SongMetadata> getNextPageOfLikedSongs(String userId, String lastFetchedId, int pageSize);
 }
