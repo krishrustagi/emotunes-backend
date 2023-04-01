@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -35,43 +36,29 @@ public class UserSongMappingDao {
                 userSongMappingRepository.findNextPageOfSongsFromAllCategory(userRepository.getReferenceById(userId),
                         lastFetchedId, pageSize);
 
-        List<SongMetadata> songMetadataList = new ArrayList<>();
-
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
-        return songMetadataList;
+        return getSongsMetaDataList(songList);
     }
 
     public List<SongMetadata> getSongsByPrefix(String userId, String prefix) {
         List<StoredUserSongMapping> songList = new ArrayList<>(); //todo
 //                userSongMappingRepository.findNextPageOfSongsFromAllCategory(userRepository.getReferenceById(userId));
-
         // todo: changes for finding using prefix
-        List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
-        return songMetadataList;
+        return getSongsMetaDataList(songList);
     }
 
     public List<SongMetadata> getNextPageOfSongsByEmotion(String userId, String lastFetchedId, Emotion emotion, int pageSize) {
         List<StoredUserSongMapping> songList =
                 userSongMappingRepository.findNextPageOfSongsWithEmotionOfUser(userRepository.getReferenceById(userId),
                         lastFetchedId, emotion.name(), pageSize);
-
-        List<SongMetadata> songMetadataList = new ArrayList<>();
-
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
-        return songMetadataList;
+        return getSongsMetaDataList(songList);
     }
 
     public List<SongMetadata> getNextPageOfLikedSongs(String userId, String lastFetchedId, int pageSize) {
         List<StoredUserSongMapping> songList =
                 userSongMappingRepository.findNextPageOfLikedSongsOfUser(userRepository.getReferenceById(userId),
                         lastFetchedId, pageSize);
-
-        List<SongMetadata> songMetadataList = new ArrayList<>();
-
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
-        return songMetadataList;
+        return getSongsMetaDataList(songList);
     }
 
     public void songLiked(String userId, SongMetadata songMetadata, boolean isLiked) {
@@ -79,7 +66,7 @@ public class UserSongMappingDao {
                 LocalTime.parse(songMetadata.getDuration()));
 
         userSongMappingRepository.updateSongToLikedForUser(userRepository.getReferenceById(userId), song, isLiked);
-        //todo why just did not update by JPA??
+        //todo why just did not update by JPA Query??
     }
 
     public void addSongsForUser(String userId) {
@@ -92,5 +79,12 @@ public class UserSongMappingDao {
 
     public String getMaxId() {
         return userSongMappingRepository.getMaxId();
+    }
+
+    private List<SongMetadata> getSongsMetaDataList(List<StoredUserSongMapping> songList) {
+        List<SongMetadata> songMetadataList = new ArrayList<>();
+        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
+        Collections.shuffle(songMetadataList);
+        return songMetadataList;
     }
 }

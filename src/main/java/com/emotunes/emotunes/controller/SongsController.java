@@ -22,7 +22,7 @@ public class SongsController {
 
     private final SongService songService;
 
-    private static final int NUMBER_OF_SONGS_TO_FETCH = 10;
+    private static final int NUMBER_OF_SONGS_TO_FETCH = 50;
 
     @GetMapping("/all")
     @ApiOperation("Get All Songs")
