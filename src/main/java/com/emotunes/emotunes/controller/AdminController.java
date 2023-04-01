@@ -30,8 +30,8 @@ public class AdminController {
 
     @PostMapping(value = "user/register")
     @ApiOperation("Register user")
-    public void registerUser(@RequestBody UserDto userDto) {
-        adminService.registerUser(userDto);
+    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(adminService.registerUser(userDto));
     }
 
 }

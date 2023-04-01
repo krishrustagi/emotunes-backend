@@ -18,6 +18,8 @@ public class SongMetadata {
 
     private Emotion emotion;
 
+    private String artist;
+
     @Builder.Default
     private boolean isLiked = false;
 }

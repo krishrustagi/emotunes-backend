@@ -2,8 +2,11 @@ package com.emotunes.emotunes.entity;
 
 import com.emotunes.emotunes.enums.Emotion;
 import lombok.*;
+import org.hibernate.type.BlobType;
+import org.hibernate.type.TextType;
 
 import javax.persistence.*;
+import java.sql.Blob;
 import java.time.LocalTime;
 
 @Data
@@ -26,5 +29,5 @@ public class StoredSong extends BaseEntity {
 
     private LocalTime duration;
 
-    // todo: add thumbnail
+    private String artist;
 }

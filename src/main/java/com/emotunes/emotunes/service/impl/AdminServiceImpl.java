@@ -13,10 +13,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +45,13 @@ public class AdminServiceImpl implements AdminService {
     public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
 
         File file = convert(songFile);
+        file.createNewFile();
 
         try {
             AudioFile audioFile = AudioFileIO.read(file);
+            Tag tag = audioFile.getTag();
+            String artist = tag.getFirst(FieldKey.ARTIST);
+
             long duration = audioFile.getAudioHeader().getTrackLength();
             log.info("{}", Instant.ofEpochSecond(duration).atZone(
                     ZoneId.of("UTC")
@@ -53,9 +63,21 @@ public class AdminServiceImpl implements AdminService {
                             .duration(Instant.ofEpochSecond(duration).atZone(
                                     ZoneId.of("UTC")
                             ).toLocalTime().toString())
+                            .artist(artist)
                             .build();
 
             String songId = persistSong(songMetadata);
+
+            Artwork artwork = tag.getFirstArtwork();
+            if (artwork != null) {
+                byte[] imageData = artwork.getBinaryData();
+                File thumbnail = new File(songId + ".jpg");
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
+                BufferedImage bufferedImage = ImageIO.read(inputStream);
+                ImageIO.write(bufferedImage, "jpg", thumbnail);
+
+                // save thumbnail file
+            }
 
             List<StoredUser> userList = userDao.findAll();
             userList.forEach(
@@ -65,23 +87,26 @@ public class AdminServiceImpl implements AdminService {
                     }
             );
 
+            // save mp3 file
+
         } catch (Exception e) {
             log.info("Error while getting audio details! ", e);
             return ResponseEntity.internalServerError().body("Song processing failed!");
-        } finally {
-            Files.delete(file.toPath());
         }
 
         return ResponseEntity.ok().body("Song processing triggered successfully!");
     }
 
     @Override
-    public void registerUser(UserDto userDto) {
+    public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
             userDao.save(UserMapper.toEntity(userDto));
             // todo: add model space and rename model as the userId
             userSongMappingDao.addSongsForUser(userDto.getUserId());
+            return "User added successfully!";
         }
+
+        return "User Already Registered!";
     }
 
     private File convert(MultipartFile file) throws IOException {

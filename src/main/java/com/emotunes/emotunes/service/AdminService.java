@@ -10,5 +10,5 @@ public interface AdminService {
 
     ResponseEntity<String> addSong(MultipartFile songFile) throws IOException;
 
-    void registerUser(UserDto userDto);
+    String registerUser(UserDto userDto);
 }
