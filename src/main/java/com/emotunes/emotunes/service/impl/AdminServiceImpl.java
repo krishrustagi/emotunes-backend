@@ -45,7 +45,6 @@ public class AdminServiceImpl implements AdminService {
     public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
 
         File file = convert(songFile);
-        file.createNewFile();
 
         try {
             AudioFile audioFile = AudioFileIO.read(file);
