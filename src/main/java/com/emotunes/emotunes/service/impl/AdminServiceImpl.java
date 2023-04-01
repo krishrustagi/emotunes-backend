@@ -50,6 +50,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
+            String title = tag.getFirst(FieldKey.TITLE);
             String artist = tag.getFirst(FieldKey.ARTIST);
 
             long duration = audioFile.getAudioHeader().getTrackLength();
@@ -59,7 +60,7 @@ public class AdminServiceImpl implements AdminService {
 
             SongMetadata songMetadata =
                     SongMetadata.builder()
-                            .title(songFile.getOriginalFilename())
+                            .title(title)
                             .duration(Instant.ofEpochSecond(duration).atZone(
                                     ZoneId.of("UTC")
                             ).toLocalTime().toString())
