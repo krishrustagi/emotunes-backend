@@ -78,8 +78,6 @@ public class AdminServiceImpl implements AdminService {
             String artist = tag.getFirst(FieldKey.ARTIST);
 
             long duration = audioFile.getAudioHeader().getTrackLength();
-            log.info("{}", Instant.ofEpochSecond(duration).atZone(ZoneId.of("UTC")).toLocalTime().toString());
-
             SongMetadata songMetadata = SongMetadata.builder().title(title)
                     .duration(Instant.ofEpochSecond(duration).atZone(ZoneId.of("UTC")).toLocalTime().toString())
                     .artist(artist).build();
@@ -106,7 +104,7 @@ public class AdminServiceImpl implements AdminService {
             // save mp3 file
 
         } catch (Exception e) {
-            log.info("Error while getting audio details! ", e);
+            log.error("Error while getting audio details! ", e);
             throw e;
         }
     }
