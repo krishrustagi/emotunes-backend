@@ -68,7 +68,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private void addSong(MultipartFile songFile)
-            throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException {
+            throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException,
+            NullPointerException {
 
         File file = convertToAudioFile(songFile);
 
