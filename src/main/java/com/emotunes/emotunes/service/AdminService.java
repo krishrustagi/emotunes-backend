@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AdminService {
 
-    ResponseEntity<String> addSongs(List<MultipartFile> songFiles) throws IOException;
+    String addSongs(List<MultipartFile> songFiles) throws IOException;
 
     String registerUser(UserDto userDto);
 }

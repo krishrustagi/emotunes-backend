@@ -49,22 +49,22 @@ public class AdminServiceImpl implements AdminService {
     private final UserSongMappingDao userSongMappingDao;
 
     @Override
-    public ResponseEntity<String> addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
+    public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
         if (songFiles.size() > BULK_SONGS_LIMIT) {
-            return ResponseEntity.internalServerError().body("Maximum 50 files at a time allowed!");
+            throw new RuntimeException("Maximum 50 files at a time allowed!");
         } else {
             songFiles.forEach(songFile -> {
                 try {
                     addSong(songFile);
                 } catch (IOException | CannotReadException | TagException | InvalidAudioFrameException |
-                         ReadOnlyFileException e) {
+                         ReadOnlyFileException | NullPointerException e) {
                     log.error("Error while adding song {}", songFile, e);
                     throw new RuntimeException();
                 }
             });
         }
 
-        return ResponseEntity.ok("All songs uploaded successfully!");
+        return "All songs uploaded successfully!";
     }
 
     private void addSong(MultipartFile songFile)
@@ -75,9 +75,12 @@ public class AdminServiceImpl implements AdminService {
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
-            String title = tag.getFirst(FieldKey.TITLE);
-            if (title == null) {
-                return ResponseEntity.internalServerError().body("Title can't be null!");
+            String title;
+            try {
+                title = tag.getFirst(FieldKey.TITLE);
+            } catch (NullPointerException e) {
+                log.error("Title can't be null! ", e);
+                throw e;
             }
 
             String artist = nonNull(tag.getFirst(FieldKey.ARTIST));

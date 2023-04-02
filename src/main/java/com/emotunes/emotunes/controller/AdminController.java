@@ -26,7 +26,7 @@ public class AdminController {
             @RequestPart("file") List<MultipartFile> songFiles)
             throws IOException {
 
-        return adminService.addSongs(songFiles);
+        return ResponseEntity.ok(adminService.addSongs(songFiles));
     }
 
     @PostMapping(value = "user/register")
