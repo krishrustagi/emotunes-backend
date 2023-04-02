@@ -80,10 +80,10 @@ public class UserSongMappingDao {
 
     @Transactional
     public void songLiked(String userId, SongMetadata songMetadata, boolean isLiked) {
-        StoredSong song = songRepository.getByTitleAndDuration(songMetadata.getTitle(),
+        String songId = songRepository.getIdByTitleAndDuration(songMetadata.getTitle(),
                 LocalTime.parse(songMetadata.getDuration()));
 
-        userSongMappingRepository.updateSongToLikedForUser(userId, song, isLiked);
+        userSongMappingRepository.updateSongToLikedForUser(userId, songId, isLiked);
     }
 
     public void addSongsForUser(String userId) {

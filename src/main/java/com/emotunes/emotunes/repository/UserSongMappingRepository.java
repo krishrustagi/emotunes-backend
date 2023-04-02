@@ -45,5 +45,5 @@ public interface UserSongMappingRepository
                     + " and song_id = ?2",
             nativeQuery = true
     )
-    void updateSongToLikedForUser(String user_id, StoredSong song, boolean isLiked);
+    void updateSongToLikedForUser(String userId, String songId, boolean isLiked);
 }
