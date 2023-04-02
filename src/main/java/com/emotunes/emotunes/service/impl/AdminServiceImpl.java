@@ -21,7 +21,6 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,7 +82,7 @@ public class AdminServiceImpl implements AdminService {
                 throw e;
             }
 
-            String artist = nonNull(tag.getFirst(FieldKey.ARTIST));
+            String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
 
             long duration = getDuration(audioFile);
 
@@ -172,7 +171,7 @@ public class AdminServiceImpl implements AdminService {
         );
     }
 
-    private String nonNull(String s) {
+    private String checkForUnknownArtist(String s) {
         if (s == null) {
             return "UNKNOWN";
         }
