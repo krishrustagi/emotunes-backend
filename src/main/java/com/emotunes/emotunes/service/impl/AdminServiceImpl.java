@@ -13,8 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,12 +41,33 @@ import java.util.Objects;
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
+    private static final int BULK_SONGS_LIMIT = 50;
+
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
 
     @Override
-    public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
+    public ResponseEntity<String> addSongs(List<MultipartFile> songFiles) throws IOException {
+        if (songFiles.size() > BULK_SONGS_LIMIT) {
+            return ResponseEntity.internalServerError().body("Maximum 50 files at a time allowed!");
+        } else {
+            songFiles.forEach(songFile -> {
+                try {
+                    addSong(songFile);
+                } catch (IOException | CannotReadException | TagException | InvalidAudioFrameException |
+                         ReadOnlyFileException e) {
+                    log.error("Error while adding song {}", songFile, e);
+                    throw new RuntimeException();
+                }
+            });
+        }
+
+        return ResponseEntity.ok("All songs uploaded successfully!");
+    }
+
+    private void addSong(MultipartFile songFile)
+            throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException {
 
         File file = convert(songFile);
 
@@ -53,18 +78,11 @@ public class AdminServiceImpl implements AdminService {
             String artist = tag.getFirst(FieldKey.ARTIST);
 
             long duration = audioFile.getAudioHeader().getTrackLength();
-            log.info("{}", Instant.ofEpochSecond(duration).atZone(
-                    ZoneId.of("UTC")
-            ).toLocalTime().toString());
+            log.info("{}", Instant.ofEpochSecond(duration).atZone(ZoneId.of("UTC")).toLocalTime().toString());
 
-            SongMetadata songMetadata =
-                    SongMetadata.builder()
-                            .title(title)
-                            .duration(Instant.ofEpochSecond(duration).atZone(
-                                    ZoneId.of("UTC")
-                            ).toLocalTime().toString())
-                            .artist(artist)
-                            .build();
+            SongMetadata songMetadata = SongMetadata.builder().title(title)
+                    .duration(Instant.ofEpochSecond(duration).atZone(ZoneId.of("UTC")).toLocalTime().toString())
+                    .artist(artist).build();
 
             String songId = persistSong(songMetadata);
 
@@ -80,21 +98,17 @@ public class AdminServiceImpl implements AdminService {
             }
 
             List<StoredUser> userList = userDao.findAll();
-            userList.forEach(
-                    user -> {
-                        // todo: predict song by model id (userId);
-                        persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
-                    }
-            );
+            userList.forEach(user -> {
+                // todo: predict song by model id (userId);
+                persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
+            });
 
             // save mp3 file
 
         } catch (Exception e) {
             log.info("Error while getting audio details! ", e);
-            return ResponseEntity.internalServerError().body("Song processing failed!");
+            throw e;
         }
-
-        return ResponseEntity.ok().body("Song processing triggered successfully!");
     }
 
     @Override
@@ -123,8 +137,7 @@ public class AdminServiceImpl implements AdminService {
         return songsDao.addSong(songMetadata);
     }
 
-    private void persistUserSongMapping(
-            String userId, String songId, Emotion emotion) {
+    private void persistUserSongMapping(String userId, String songId, Emotion emotion) {
         userSongMappingDao.addSong(userId, songId, emotion);
     }
 }
