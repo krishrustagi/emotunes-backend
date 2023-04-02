@@ -14,10 +14,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,24 +41,48 @@ import java.util.Objects;
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
+    private static final int BULK_SONGS_LIMIT = 50;
+
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
 
     @Override
-    public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
+    public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
+        if (songFiles.size() > BULK_SONGS_LIMIT) {
+            throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
+        } else {
+            songFiles.forEach(songFile -> {
+                try {
+                    addSong(songFile);
+                } catch (IOException | CannotReadException | TagException | InvalidAudioFrameException |
+                         ReadOnlyFileException | NullPointerException e) {
+                    log.error("Error while adding song {}", songFile, e);
+                }
+            });
+        }
+
+        return "All songs uploaded successfully!";
+    }
+
+    private void addSong(MultipartFile songFile)
+            throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException,
+            NullPointerException {
 
         File file = convertToAudioFile(songFile);
 
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
-            String title = tag.getFirst(FieldKey.TITLE);
-            if (title == null) {
-                return ResponseEntity.internalServerError().body("Title can't be null!");
+            String title;
+            try {
+                title = tag.getFirst(FieldKey.TITLE);
+            } catch (NullPointerException e) {
+                log.error("Title can't be null! ", e);
+                throw e;
             }
 
-            String artist = nonNull(tag.getFirst(FieldKey.ARTIST));
+            String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
 
             long duration = getDuration(audioFile);
 
@@ -79,11 +106,9 @@ public class AdminServiceImpl implements AdminService {
             availSongToAllUsers(songId);
 
         } catch (Exception e) {
-            log.info("Error while getting audio details! ", e);
-            return ResponseEntity.internalServerError().body("Song processing failed!");
+            log.error("Error while getting audio details! ", e);
+            throw e;
         }
-
-        return ResponseEntity.ok().body("Song processing triggered successfully!");
     }
 
     @Override
@@ -112,8 +137,7 @@ public class AdminServiceImpl implements AdminService {
         return songsDao.addSong(songMetadata);
     }
 
-    private void persistUserSongMapping(
-            String userId, String songId, Emotion emotion) {
+    private void persistUserSongMapping(String userId, String songId, Emotion emotion) {
         userSongMappingDao.addSong(userId, songId, emotion);
     }
 
@@ -147,9 +171,9 @@ public class AdminServiceImpl implements AdminService {
         );
     }
 
-    private String nonNull(String s) {
+    private String checkForUnknownArtist(String s) {
         if (s == null) {
-            return "";
+            return "UNKNOWN";
         }
         return s;
     }
