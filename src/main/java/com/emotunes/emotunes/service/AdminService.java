@@ -5,10 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface AdminService {
 
-    ResponseEntity<String> addSong(MultipartFile songFile) throws IOException;
+    String addSongs(List<MultipartFile> songFiles) throws IOException;
 
-    void registerUser(UserDto userDto);
+    String registerUser(UserDto userDto);
 }

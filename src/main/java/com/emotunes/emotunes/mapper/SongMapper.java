@@ -3,7 +3,6 @@ package com.emotunes.emotunes.mapper;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUserSongMapping;
-import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.experimental.UtilityClass;
 
@@ -17,6 +16,8 @@ public class SongMapper {
                 .title(song.getSong().getTitle())
                 .duration(song.getSong().getDuration().toString())
                 .emotion(song.getEmotion())
+                .artist(song.getSong().getArtist())
+                .songUrl(song.getSong().getSongUrl())
                 .isLiked(song.isLiked())
                 .build();
     }
@@ -26,6 +27,9 @@ public class SongMapper {
                 .id(IdGenerationUtil.getRandomId())
                 .title(songMetadata.getTitle())
                 .duration(LocalTime.parse(songMetadata.getDuration()))
+                .artist(songMetadata.getArtist())
+                .thumbnailUrl(songMetadata.getThumbnailUrl())
+                .songUrl(songMetadata.getSongUrl())
                 .build();
     }
 }

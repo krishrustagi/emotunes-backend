@@ -9,14 +9,24 @@ import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.mapper.UserMapper;
 import com.emotunes.emotunes.service.AdminService;
+import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.springframework.http.ResponseEntity;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,60 +41,89 @@ import java.util.Objects;
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
+    private static final int BULK_SONGS_LIMIT = 50;
+
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
 
     @Override
-    public ResponseEntity<String> addSong(MultipartFile songFile) throws IOException {
+    public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
+        if (songFiles.size() > BULK_SONGS_LIMIT) {
+            throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
+        } else {
+            songFiles.forEach(songFile -> {
+                try {
+                    addSong(songFile);
+                } catch (IOException | CannotReadException | TagException | InvalidAudioFrameException |
+                         ReadOnlyFileException | NullPointerException e) {
+                    log.error("Error while adding song {}", songFile, e);
+                }
+            });
+        }
 
-        File file = convert(songFile);
+        return "All songs uploaded successfully!";
+    }
+
+    private void addSong(MultipartFile songFile)
+            throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException,
+            NullPointerException {
+
+        File file = convertToAudioFile(songFile);
 
         try {
             AudioFile audioFile = AudioFileIO.read(file);
-            long duration = audioFile.getAudioHeader().getTrackLength();
-            log.info("{}", Instant.ofEpochSecond(duration).atZone(
-                    ZoneId.of("UTC")
-            ).toLocalTime().toString());
+            Tag tag = audioFile.getTag();
+            String title;
+            try {
+                title = tag.getFirst(FieldKey.TITLE);
+            } catch (NullPointerException e) {
+                log.error("Title can't be null! ", e);
+                throw e;
+            }
+
+            String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
+
+            long duration = getDuration(audioFile);
+
+            String thumbnailUrl = saveThumbnail(tag);
 
             SongMetadata songMetadata =
                     SongMetadata.builder()
-                            .title(songFile.getOriginalFilename())
+                            .title(title)
                             .duration(Instant.ofEpochSecond(duration).atZone(
                                     ZoneId.of("UTC")
                             ).toLocalTime().toString())
+                            .artist(artist)
+                            .thumbnailUrl(thumbnailUrl)
+                            .songUrl("") // todo: update url
                             .build();
+
+            // todo: save mp3 song file
 
             String songId = persistSong(songMetadata);
 
-            List<StoredUser> userList = userDao.findAll();
-            userList.forEach(
-                    user -> {
-                        // todo: predict song by model id (userId);
-                        persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
-                    }
-            );
+            availSongToAllUsers(songId);
 
         } catch (Exception e) {
-            log.info("Error while getting audio details! ", e);
-            return ResponseEntity.internalServerError().body("Song processing failed!");
-        } finally {
-            Files.delete(file.toPath());
+            log.error("Error while getting audio details! ", e);
+            throw e;
         }
-
-        return ResponseEntity.ok().body("Song processing triggered successfully!");
     }
 
     @Override
-    public void registerUser(UserDto userDto) {
+    public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
             userDao.save(UserMapper.toEntity(userDto));
             // todo: add model space and rename model as the userId
             userSongMappingDao.addSongsForUser(userDto.getUserId());
+            return "User added successfully!";
         }
+
+        return "User Already Registered!";
     }
 
-    private File convert(MultipartFile file) throws IOException {
+    private File convertToAudioFile(MultipartFile file) throws IOException {
         File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
         try (InputStream is = file.getInputStream()) {
             Files.copy(is, convFile.toPath());
@@ -98,8 +137,44 @@ public class AdminServiceImpl implements AdminService {
         return songsDao.addSong(songMetadata);
     }
 
-    private void persistUserSongMapping(
-            String userId, String songId, Emotion emotion) {
+    private void persistUserSongMapping(String userId, String songId, Emotion emotion) {
         userSongMappingDao.addSong(userId, songId, emotion);
+    }
+
+    private long getDuration(AudioFile audioFile) {
+        return audioFile.getAudioHeader().getTrackLength();
+    }
+
+    private String saveThumbnail(Tag tag) throws IOException {
+        Artwork artwork = tag.getFirstArtwork();
+        if (artwork != null) {
+            byte[] imageData = artwork.getBinaryData();
+            String thumbnailFileName = IdGenerationUtil.getRandomId();
+            File thumbnail = new File(thumbnailFileName + ".jpg");
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
+            BufferedImage bufferedImage = ImageIO.read(inputStream);
+            ImageIO.write(bufferedImage, "jpg", thumbnail);
+
+            // save thumbnail file with thumbnailFileName
+        }
+
+        return ""; // todo: return thumbnail url
+    }
+
+    private void availSongToAllUsers(String songId) {
+        List<StoredUser> userList = userDao.findAll();
+        userList.forEach(
+                user -> {
+                    // todo: predict song by model id (userId);
+                    persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
+                }
+        );
+    }
+
+    private String checkForUnknownArtist(String s) {
+        if (s == null) {
+            return "UNKNOWN";
+        }
+        return s;
     }
 }

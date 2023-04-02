@@ -1,9 +1,11 @@
 package com.emotunes.emotunes.entity;
 
-import com.emotunes.emotunes.enums.Emotion;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.time.LocalTime;
 
 @Data
@@ -26,5 +28,9 @@ public class StoredSong extends BaseEntity {
 
     private LocalTime duration;
 
-    // todo: add thumbnail
+    private String artist;
+
+    private String songUrl;
+
+    private String thumbnailUrl;
 }
