@@ -12,20 +12,17 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Setter
-@Table(name = "song_as_per_emotion")
 @EqualsAndHashCode(callSuper = true)
+@Table(name = "song_as_per_emotion", indexes = {
+        @Index(name = "unique_idx", columnList = "userId, songId", unique = true)})
 public class StoredSongAsPerEmotion extends BaseEntity {
 
     @Id
     private String id;
 
-    @ManyToOne
-    @JoinColumn
-    private StoredUser user;
+    private String userId;
 
-    @ManyToOne
-    @JoinColumn
-    private StoredSong song;
+    private String songId;
 
     @Enumerated(EnumType.STRING)
     private Emotion correctEmotion;

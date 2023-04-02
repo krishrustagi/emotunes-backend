@@ -11,6 +11,7 @@ import com.emotunes.emotunes.repository.UserRepository;
 import com.emotunes.emotunes.repository.UserSongMappingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -25,58 +26,64 @@ public class UserSongMappingDao {
     private final UserSongMappingRepository userSongMappingRepository;
 
     public void addSong(String userId, String songId, Emotion emotion) {
-        userSongMappingRepository.save(
-                UserSongMappingMapper.toEntity(userRepository.getReferenceById(userId),
-                        songRepository.getReferenceById(songId), emotion));
+        userSongMappingRepository.save(UserSongMappingMapper.toEntity(userId, songId, emotion));
     }
 
     public List<SongMetadata> getAll(String userId) {
-        List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllSongsOfUser(userRepository.getReferenceById(userId));
+        List<StoredUserSongMapping> userSongMappingList =
+                userSongMappingRepository.findAllSongsOfUser(userId);
 
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
+        userSongMappingList.forEach(userSongMapping -> {
+            StoredSong song = songRepository.getReferenceById(userSongMapping.getSongId());
+            songMetadataList.add(SongMapper.toSongMetadata(song, userSongMapping.getEmotion(),
+                    userSongMapping.isLiked()));
+        });
         return songMetadataList;
     }
 
     public List<SongMetadata> getSongsByPrefix(String userId, String prefix) {
-        List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllSongsOfUser(userRepository.getReferenceById(userId));
-
-        // todo: changes for finding using prefix
-        List<SongMetadata> songMetadataList = new ArrayList<>();
-
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
-        return songMetadataList;
+        // todo: find using edit distance/trie
+        return null;
     }
 
     public List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion) {
-        List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllSongsWithEmotionOfUser(userRepository.getReferenceById(userId),
-                        emotion.name());
+        List<StoredUserSongMapping> userSongMappingList =
+                userSongMappingRepository.findAllSongsWithEmotionOfUser(userId, emotion.name());
 
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
+        userSongMappingList.forEach(userSongMapping -> {
+            StoredSong song = songRepository.getReferenceById(userSongMapping.getSongId());
+            songMetadataList.add(SongMapper.toSongMetadata(song, emotion,
+                    userSongMapping.isLiked()));
+        });
+
         return songMetadataList;
     }
 
     public List<SongMetadata> getAllLikedSongs(String userId) {
-        List<StoredUserSongMapping> songList =
-                userSongMappingRepository.findAllLikedSongsOfUser(userRepository.getReferenceById(userId));
+        List<StoredUserSongMapping> userSongMappingList =
+                userSongMappingRepository.findAllLikedSongsOfUser(userId);
 
         List<SongMetadata> songMetadataList = new ArrayList<>();
 
-        songList.forEach(song -> songMetadataList.add(SongMapper.toSongMetadata(song)));
+        userSongMappingList.forEach(userSongMapping -> {
+            StoredSong song = songRepository.getReferenceById(userSongMapping.getSongId());
+            songMetadataList.add(SongMapper.toSongMetadata(song, userSongMapping.getEmotion(),
+                    true));
+        });
+
         return songMetadataList;
     }
 
+    @Transactional
     public void songLiked(String userId, SongMetadata songMetadata, boolean isLiked) {
         StoredSong song = songRepository.getByTitleAndDuration(songMetadata.getTitle(),
                 LocalTime.parse(songMetadata.getDuration()));
 
-        userSongMappingRepository.updateSongToLikedForUser(userRepository.getReferenceById(userId), song, isLiked);
+        userSongMappingRepository.updateSongToLikedForUser(userId, song, isLiked);
     }
 
     public void addSongsForUser(String userId) {

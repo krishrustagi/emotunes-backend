@@ -19,5 +19,11 @@ public interface SongRepository extends JpaRepository<StoredSong, String> {
             nativeQuery = true)
     List<StoredSong> findAllByEmotion(String emotion);
 
-    StoredSong getByTitleAndDuration(String title, LocalTime duration);
+    @Query(value =
+            "select id from song"
+                    + " where title = ?1 and"
+                    + " duration = ?2",
+            nativeQuery = true
+    )
+    String getIdByTitleAndDuration(String title, LocalTime duration);
 }

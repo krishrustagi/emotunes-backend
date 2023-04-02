@@ -10,15 +10,13 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class UserSongMappingMapper {
 
-    public static StoredUserSongMapping toEntity(
-            StoredUser user,
-            StoredSong song,
+    public static StoredUserSongMapping toEntity(String userId, String songId,
             Emotion emotion) {
 
         return StoredUserSongMapping.builder()
                 .id(IdGenerationUtil.getRandomId())
-                .user(user)
-                .song(song)
+                .userId(userId)
+                .songId(songId)
                 .emotion(emotion)
                 .build();
     }
