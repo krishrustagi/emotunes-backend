@@ -82,7 +82,7 @@ public class UserSongMappingDao {
     public void addSongsForUser(String userId) {
         List<StoredSong> songList = songRepository.findAll();
         songList.forEach(song -> {
-            Emotion songEmotion = Emotion.HAPPY; // use pre-defined emotions the song
+            Emotion songEmotion = Emotion.HAPPY; // todo: use pre-defined emotions the song
             addSong(userId, song.getId(), songEmotion);
         });
     }

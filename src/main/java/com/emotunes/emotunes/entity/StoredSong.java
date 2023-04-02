@@ -29,4 +29,8 @@ public class StoredSong extends BaseEntity {
     private LocalTime duration;
 
     private String artist;
+
+    private String songUrl;
+
+    private String thumbnailUrl;
 }

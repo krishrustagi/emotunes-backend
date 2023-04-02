@@ -18,6 +18,8 @@ public class SongMapper {
                 .title(song.getSong().getTitle())
                 .duration(song.getSong().getDuration().toString())
                 .emotion(song.getEmotion())
+                .artist(song.getSong().getArtist())
+                .songUrl(song.getSong().getSongUrl())
                 .isLiked(song.isLiked())
                 .build();
     }
@@ -28,6 +30,8 @@ public class SongMapper {
                 .title(songMetadata.getTitle())
                 .duration(LocalTime.parse(songMetadata.getDuration()))
                 .artist(songMetadata.getArtist())
+                .thumbnailUrl(songMetadata.getThumbnailUrl())
+                .songUrl(songMetadata.getSongUrl())
                 .build();
     }
 }
