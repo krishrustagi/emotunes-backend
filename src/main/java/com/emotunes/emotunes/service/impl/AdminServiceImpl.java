@@ -174,7 +174,7 @@ public class AdminServiceImpl implements AdminService {
 
     private String nonNull(String s) {
         if (s == null) {
-            return "";
+            return "UNKNOWN";
         }
         return s;
     }
