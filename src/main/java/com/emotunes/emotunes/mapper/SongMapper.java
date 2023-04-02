@@ -3,10 +3,8 @@ package com.emotunes.emotunes.mapper;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUserSongMapping;
-import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.experimental.UtilityClass;
-import org.hibernate.type.BlobType;
 
 import java.time.LocalTime;
 
