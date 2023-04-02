@@ -51,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
         if (songFiles.size() > BULK_SONGS_LIMIT) {
-            throw new RuntimeException("Maximum 50 files at a time allowed!");
+            throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
         } else {
             songFiles.forEach(songFile -> {
                 try {
