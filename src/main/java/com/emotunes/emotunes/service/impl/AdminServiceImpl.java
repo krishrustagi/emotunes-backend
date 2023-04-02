@@ -59,7 +59,6 @@ public class AdminServiceImpl implements AdminService {
                 } catch (IOException | CannotReadException | TagException | InvalidAudioFrameException |
                          ReadOnlyFileException | NullPointerException e) {
                     log.error("Error while adding song {}", songFile, e);
-                    throw new RuntimeException();
                 }
             });
         }
