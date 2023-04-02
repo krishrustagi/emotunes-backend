@@ -22,11 +22,11 @@ public class AdminController {
 
     @PostMapping(value = "/songs/add", consumes = "multipart/form-data")
     @ApiOperation(value = "Upload song files")
-    public ResponseEntity<String> addSong(
+    public ResponseEntity<String> addSongs(
             @RequestPart("file") List<MultipartFile> songFiles)
             throws IOException {
 
-        return adminService.addSong(songFiles);
+        return adminService.addSongs(songFiles);
     }
 
     @PostMapping(value = "user/register")

@@ -9,6 +9,7 @@ import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.mapper.UserMapper;
 import com.emotunes.emotunes.service.AdminService;
+import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
@@ -48,7 +49,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserSongMappingDao userSongMappingDao;
 
     @Override
-    public ResponseEntity<String> addSongs(List<MultipartFile> songFiles) throws IOException {
+    public ResponseEntity<String> addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
         if (songFiles.size() > BULK_SONGS_LIMIT) {
             return ResponseEntity.internalServerError().body("Maximum 50 files at a time allowed!");
         } else {
@@ -69,7 +70,7 @@ public class AdminServiceImpl implements AdminService {
     private void addSong(MultipartFile songFile)
             throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException {
 
-        File file = convert(songFile);
+        File file = convertToAudioFile(songFile);
 
         try {
             AudioFile audioFile = AudioFileIO.read(file);
@@ -77,31 +78,26 @@ public class AdminServiceImpl implements AdminService {
             String title = tag.getFirst(FieldKey.TITLE);
             String artist = tag.getFirst(FieldKey.ARTIST);
 
-            long duration = audioFile.getAudioHeader().getTrackLength();
-            SongMetadata songMetadata = SongMetadata.builder().title(title)
-                    .duration(Instant.ofEpochSecond(duration).atZone(ZoneId.of("UTC")).toLocalTime().toString())
-                    .artist(artist).build();
+            long duration = getDuration(audioFile);
+
+            String thumbnailUrl = saveThumbnail(tag);
+
+            SongMetadata songMetadata =
+                    SongMetadata.builder()
+                            .title(title)
+                            .duration(Instant.ofEpochSecond(duration).atZone(
+                                    ZoneId.of("UTC")
+                            ).toLocalTime().toString())
+                            .artist(artist)
+                            .thumbnailUrl(thumbnailUrl)
+                            .songUrl("") // todo: update url
+                            .build();
+
+            // todo: save mp3 song file
 
             String songId = persistSong(songMetadata);
 
-            Artwork artwork = tag.getFirstArtwork();
-            if (artwork != null) {
-                byte[] imageData = artwork.getBinaryData();
-                File thumbnail = new File(songId + ".jpg");
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
-                BufferedImage bufferedImage = ImageIO.read(inputStream);
-                ImageIO.write(bufferedImage, "jpg", thumbnail);
-
-                // save thumbnail file
-            }
-
-            List<StoredUser> userList = userDao.findAll();
-            userList.forEach(user -> {
-                // todo: predict song by model id (userId);
-                persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
-            });
-
-            // save mp3 file
+            availSongToAllUsers(songId);
 
         } catch (Exception e) {
             log.error("Error while getting audio details! ", e);
@@ -121,7 +117,7 @@ public class AdminServiceImpl implements AdminService {
         return "User Already Registered!";
     }
 
-    private File convert(MultipartFile file) throws IOException {
+    private File convertToAudioFile(MultipartFile file) throws IOException {
         File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
         try (InputStream is = file.getInputStream()) {
             Files.copy(is, convFile.toPath());
@@ -137,5 +133,35 @@ public class AdminServiceImpl implements AdminService {
 
     private void persistUserSongMapping(String userId, String songId, Emotion emotion) {
         userSongMappingDao.addSong(userId, songId, emotion);
+    }
+
+    private long getDuration(AudioFile audioFile) {
+        return audioFile.getAudioHeader().getTrackLength();
+    }
+
+    private String saveThumbnail(Tag tag) throws IOException {
+        Artwork artwork = tag.getFirstArtwork();
+        if (artwork != null) {
+            byte[] imageData = artwork.getBinaryData();
+            String thumbnailFileName = IdGenerationUtil.getRandomId();
+            File thumbnail = new File(thumbnailFileName + ".jpg");
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
+            BufferedImage bufferedImage = ImageIO.read(inputStream);
+            ImageIO.write(bufferedImage, "jpg", thumbnail);
+
+            // save thumbnail file with thumbnailFileName
+        }
+
+        return ""; // todo: return thumbnail url
+    }
+
+    private void availSongToAllUsers(String songId) {
+        List<StoredUser> userList = userDao.findAll();
+        userList.forEach(
+                user -> {
+                    // todo: predict song by model id (userId);
+                    persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
+                }
+        );
     }
 }
