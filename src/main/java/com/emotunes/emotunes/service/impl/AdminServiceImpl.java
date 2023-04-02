@@ -51,7 +51,11 @@ public class AdminServiceImpl implements AdminService {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
             String title = tag.getFirst(FieldKey.TITLE);
-            String artist = tag.getFirst(FieldKey.ARTIST);
+            if (title == null) {
+                return ResponseEntity.internalServerError().body("Title can't be null!");
+            }
+
+            String artist = nonNull(tag.getFirst(FieldKey.ARTIST));
 
             long duration = getDuration(audioFile);
 
@@ -141,5 +145,12 @@ public class AdminServiceImpl implements AdminService {
                     persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
                 }
         );
+    }
+
+    private String nonNull(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s;
     }
 }
