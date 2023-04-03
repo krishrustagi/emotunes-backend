@@ -52,11 +52,6 @@ public class UserSongMappingDao {
         return generateSongMetadataList(userSongMappingList);
     }
 
-    @Transactional
-    public void songLiked(String userId, String songId, boolean isLiked) {
-        userSongMappingRepository.updateSongToLikedForUser(userId, songId, isLiked);
-    }
-
     public void addSongsForUser(String userId) {
         List<StoredSong> songList = songRepository.findAll();
         songList.forEach(song -> {
@@ -74,5 +69,10 @@ public class UserSongMappingDao {
                     userSongMapping.isLiked()));
         });
         return songMetadataList;
+    }
+
+    @Transactional
+    public void toggleLike(String userId, String songId) {
+        userSongMappingRepository.toggleLike(userId, songId);
     }
 }
