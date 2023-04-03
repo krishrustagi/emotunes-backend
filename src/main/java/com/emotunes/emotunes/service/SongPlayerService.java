@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface SongPlayerService {
 
-    ResponseEntity<String> liked(String userId, String songId, boolean isLiked);
-
     ResponseEntity<String> songNotPerEmotion(String userId, String songId, Emotion correctEmotion);
+
+    String toggleLike(String userId, String songId);
 }
