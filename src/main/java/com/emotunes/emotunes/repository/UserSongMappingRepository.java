@@ -1,6 +1,5 @@
 package com.emotunes.emotunes.repository;
 
-import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUserSongMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -17,7 +17,7 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public List<SongMetadata> getAllSongs(String userId) {
-        return userSongMappingDao.getAll(userId);
+        return userSongMappingDao.getAllSongs(userId);
     }
 
     @Override

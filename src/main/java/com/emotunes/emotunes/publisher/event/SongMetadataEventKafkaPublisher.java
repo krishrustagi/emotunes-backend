@@ -6,7 +6,6 @@ import com.emotunes.emotunes.publisher.SongMetadataEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.emotunes.emotunes.commons.KafkaCommons.PROJECT_PREFIX;
 import static com.emotunes.emotunes.commons.KafkaCommons.SONG_METADATA_EVENT_TOPIC;
 
 @Component
