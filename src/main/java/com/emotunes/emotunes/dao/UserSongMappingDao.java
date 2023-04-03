@@ -53,8 +53,8 @@ public class UserSongMappingDao {
     }
 
     @Transactional
-    public void songLiked(String userId, SongMetadata songMetadata, boolean isLiked) {
-        userSongMappingRepository.updateSongToLikedForUser(userId, songMetadata.getSongId(), isLiked);
+    public void songLiked(String userId, String songId, boolean isLiked) {
+        userSongMappingRepository.updateSongToLikedForUser(userId, songId, isLiked);
     }
 
     public void addSongsForUser(String userId) {

@@ -2,7 +2,6 @@ package com.emotunes.emotunes.service.impl;
 
 import com.emotunes.emotunes.dao.SongAsPerEmotionDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
-import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.SongPlayerService;
 import lombok.RequiredArgsConstructor;
@@ -20,16 +19,16 @@ public class SongPlayerServiceImpl implements SongPlayerService {
     @Override
     @Transactional
     public ResponseEntity<String> liked(
-            String userId, SongMetadata songMetadata, boolean isLiked) {
-        userSongMappingDao.songLiked(userId, songMetadata, isLiked);
+            String userId, String songId, boolean isLiked) {
+        userSongMappingDao.songLiked(userId, songId, isLiked);
 
         return ResponseEntity.ok("Song Liked!");
     }
 
     @Override
     public ResponseEntity<String> songNotPerEmotion(
-            String userId, SongMetadata songMetadata, Emotion correctEmotion) {
-        songAsPerEmotionDao.save(userId, songMetadata, correctEmotion);
+            String userId, String songId, Emotion correctEmotion) {
+        songAsPerEmotionDao.save(userId, songId, correctEmotion);
         return ResponseEntity.ok("Emotion suggested successfully!");
     }
 }

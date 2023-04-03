@@ -1,6 +1,5 @@
 package com.emotunes.emotunes.dao;
 
-import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.mapper.SongAsPerEmotionMapper;
 import com.emotunes.emotunes.repository.SongAsPerEmotionRepository;
@@ -13,9 +12,9 @@ public class SongAsPerEmotionDao {
 
     private final SongAsPerEmotionRepository songAsPerEmotionRepository;
 
-    public void save(String userId, SongMetadata songMetadata, Emotion correctEmotion) {
+    public void save(String userId, String songId, Emotion correctEmotion) {
         songAsPerEmotionRepository.save(
-                SongAsPerEmotionMapper.toEntity(userId, songMetadata.getSongId(), correctEmotion));
+                SongAsPerEmotionMapper.toEntity(userId, songId, correctEmotion));
     }
 
 }
