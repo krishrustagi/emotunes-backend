@@ -12,8 +12,15 @@
     <groupId>com.emotunes</groupId>
     <artifactId>emotunes</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>emotunes</name>
     <description>Emotunes - The Emotion based music player</description>
+    <modules>
+        <module>emotunes-commons</module>
+        <module>emotunes-admin</module>
+        <module>emotunes-service</module>
+        <module>emotunes-server</module>
+    </modules>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -80,7 +87,6 @@
         </dependency>
 
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
