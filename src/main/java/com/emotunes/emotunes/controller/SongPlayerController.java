@@ -19,13 +19,12 @@ public class SongPlayerController {
 
     private final SongPlayerService songPlayerService;
 
-    @PostMapping("/is_liked")
-    @ApiOperation(("Is liked?"))
-    public ResponseEntity<String> userSongResponse(
+    @PostMapping("/toggle_like")
+    @ApiOperation(("Toggle like"))
+    public ResponseEntity<String> toggleLike(
             @RequestParam(value = "user_id") String userId,
-            @RequestParam(value = "song_id") String songId,
-            @RequestParam(value = "liked") boolean isLiked) {
-        return songPlayerService.liked(userId, songId, isLiked);
+            @RequestParam(value = "song_id") String songId) {
+        return ResponseEntity.ok(songPlayerService.toggleLike(userId, songId));
     }
 
     // todo: change function and api name
