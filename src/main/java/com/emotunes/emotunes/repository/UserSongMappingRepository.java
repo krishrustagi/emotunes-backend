@@ -1,7 +1,5 @@
 package com.emotunes.emotunes.repository;
 
-import com.emotunes.emotunes.entity.StoredSong;
-import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.entity.StoredUserSongMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,7 +18,7 @@ public interface UserSongMappingRepository
                     + " where user_id = ?1",
             nativeQuery = true
     )
-    List<StoredUserSongMapping> findAllSongsOfUser(StoredUser storedUser);
+    List<StoredUserSongMapping> findAllSongsOfUser(String userId);
 
     @Query(value =
             "select * from user_song_emotion_mapping"
@@ -28,7 +26,7 @@ public interface UserSongMappingRepository
                     + " and emotion = ?2",
             nativeQuery = true
     )
-    List<StoredUserSongMapping> findAllSongsWithEmotionOfUser(StoredUser storedUser, String emotion);
+    List<StoredUserSongMapping> findAllSongsWithEmotionOfUser(String userId, String emotion);
 
     @Query(value =
             "select * from user_song_emotion_mapping"
@@ -36,7 +34,7 @@ public interface UserSongMappingRepository
                     + " and is_liked = 1",
             nativeQuery = true
     )
-    List<StoredUserSongMapping> findAllLikedSongsOfUser(StoredUser storedUser);
+    List<StoredUserSongMapping> findAllLikedSongsOfUser(String userId);
 
     @Modifying
     @Query(value =
@@ -46,5 +44,5 @@ public interface UserSongMappingRepository
                     + " and song_id = ?2",
             nativeQuery = true
     )
-    void updateSongToLikedForUser(StoredUser referenceById, StoredSong song, boolean isLiked);
+    void updateSongToLikedForUser(String userId, String songId, boolean isLiked);
 }

@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SongMetadata {
 
+    private String songId;
+
     private String title;
 
     private String duration;
