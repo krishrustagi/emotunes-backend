@@ -74,8 +74,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
-            String title;
-            title = getTitle(tag);
+            String title = getTitle(tag);
             String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
 
             long duration = getDuration(audioFile);
