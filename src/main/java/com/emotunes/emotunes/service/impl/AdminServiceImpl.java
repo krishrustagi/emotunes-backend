@@ -74,14 +74,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
-            String title;
-            try {
-                title = tag.getFirst(FieldKey.TITLE);
-            } catch (NullPointerException e) {
-                log.error("Title can't be null! ", e);
-                throw e;
-            }
-
+            String title = getTitle(tag);
             String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
 
             long duration = getDuration(audioFile);
@@ -176,5 +169,24 @@ public class AdminServiceImpl implements AdminService {
             return "UNKNOWN";
         }
         return s;
+    }
+
+    private String getTitle(Tag tag) {
+        String title;
+        try {
+            title = tag.getFirst(FieldKey.TITLE);
+
+            title = title.replace('_', ' ');
+            title = title.replaceAll("\\s*\\(\\s*", " (");
+            title = title.replaceAll("\\s*\\)\\s*", ") ");
+            if (title.endsWith(".mp3")) {
+                title = title.substring(0, title.length() - 4);
+            }
+        } catch (NullPointerException e) {
+            log.error("Title can't be null! ", e);
+            throw e;
+        }
+
+        return title;
     }
 }
