@@ -19,12 +19,6 @@ public class SongPlayerController {
 
     private final SongPlayerService songPlayerService;
 
-    @PostMapping("/play")
-    @ApiOperation("Play")
-    public void play(@RequestParam("song_url") String songUrl) {
-        // todo: play song
-    }
-
     @PostMapping("/toggle_like")
     @ApiOperation(("Toggle like"))
     public ResponseEntity<String> toggleLike(
@@ -33,6 +27,7 @@ public class SongPlayerController {
         return ResponseEntity.ok(songPlayerService.toggleLike(userId, songId));
     }
 
+    // todo: change function and api name
     @PostMapping("/song_not_per_emotion")
     @ApiOperation("Song not per emotion")
     public ResponseEntity<String> songNotPerEmotion(
