@@ -13,7 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.shuffle;
 
 @Component
 @RequiredArgsConstructor
@@ -29,8 +32,7 @@ public class UserSongMappingDao {
     public List<SongMetadata> getPaginatedAllSongsForUser(String userId, String songId, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
                 userSongMappingRepository.findPaginatedAllSongsForUser(userId, songId, pageSize);
-
-        return generateSongMetadataList(userSongMappingList);
+        return getAndShuffleSongMetaDataList(userSongMappingList);
     }
 
     public List<SongMetadata> getSongsByPrefix(String userId, String prefix) {
@@ -42,14 +44,14 @@ public class UserSongMappingDao {
         List<StoredUserSongMapping> userSongMappingList =
                 userSongMappingRepository.findPaginatedSongsByEmotionForUser(userId, songId, emotion.name(), pageSize);
 
-        return generateSongMetadataList(userSongMappingList);
+        return getAndShuffleSongMetaDataList(userSongMappingList);
     }
 
     public List<SongMetadata> getPaginatedLikedSongs(String userId, String songId, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
                 userSongMappingRepository.findPaginatedLikedSongsOfUser(userId, songId, pageSize);
 
-        return generateSongMetadataList(userSongMappingList);
+        return getAndShuffleSongMetaDataList(userSongMappingList);
     }
 
     public void addSongsForUser(String userId) {
@@ -68,6 +70,12 @@ public class UserSongMappingDao {
             songMetadataList.add(SongMapper.toSongMetadata(song, userSongMapping.getEmotion(),
                     userSongMapping.isLiked()));
         });
+        return songMetadataList;
+    }
+
+    private List<SongMetadata> getAndShuffleSongMetaDataList(List<StoredUserSongMapping> userSongMappingList) {
+        List<SongMetadata> songMetadataList = generateSongMetadataList(userSongMappingList);
+        Collections.shuffle(songMetadataList);
         return songMetadataList;
     }
 

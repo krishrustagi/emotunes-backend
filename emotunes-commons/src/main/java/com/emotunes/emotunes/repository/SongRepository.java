@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface SongRepository extends JpaRepository<StoredSong, String> {
 
     @Query(
-            value = "select id from song order by song offset ?1",
+            value = "select id from song order by id limit 1 offset ?1",
             nativeQuery = true
     )
     String getLastFetchedSongId(Long offset);
