@@ -39,7 +39,7 @@ public class SongsController {
     }
 
     @GetMapping("/emotion")
-    @ApiOperation("Get Songs By Emotion") // todo: add paging
+    @ApiOperation("Get Next Page Of Songs By Emotion") // todo: add paging
     public ResponseEntity<List<SongMetadata>> getSongsByEmotion(
             @RequestParam(value = "user_id") String userId,
             @RequestParam(value = "emotion") Emotion emotion,
@@ -48,7 +48,7 @@ public class SongsController {
     }
 
     @GetMapping("liked")
-    @ApiOperation("Get All liked songs")
+    @ApiOperation("Get Next Page Of liked songs")
     public ResponseEntity<List<SongMetadata>> getLikedSongs(
             @RequestParam("user_id") String userId,
             @RequestParam(value = "offset") Long offset) {

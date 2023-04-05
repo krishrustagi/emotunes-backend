@@ -40,7 +40,7 @@ public class UserSongMappingDao {
 
     public List<SongMetadata> getPaginatedSongsByEmotionForUser(String userId, String songId, Emotion emotion, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
-                userSongMappingRepository.findPaginatedSongsWithEmotionForUser(userId, songId, emotion.name(), pageSize);
+                userSongMappingRepository.findPaginatedSongsByEmotionForUser(userId, songId, emotion.name(), pageSize);
 
         return generateSongMetadataList(userSongMappingList);
     }
