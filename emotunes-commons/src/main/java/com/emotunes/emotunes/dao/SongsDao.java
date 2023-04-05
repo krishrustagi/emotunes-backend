@@ -19,7 +19,7 @@ public class SongsDao {
         return songRepository.save(SongMapper.toSongEntity(songMetadata)).getId();
     }
 
-    public List<StoredSong> getAll() {
+    public List<StoredSong> getAllSongs() {
         return songRepository.findAll();
     }
 }

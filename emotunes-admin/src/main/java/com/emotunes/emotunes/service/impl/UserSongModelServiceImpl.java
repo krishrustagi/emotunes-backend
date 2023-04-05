@@ -37,10 +37,16 @@ public class UserSongModelServiceImpl implements UserSongModelService {
         StringBuilder response = new StringBuilder();
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         Process process = processBuilder.start();
-        BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line).append("\n");
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                response.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            log.error("Error while reading python script!", e);
+            throw e;
+        } finally {
+            process.destroy();
         }
 
         return response.toString();

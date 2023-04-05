@@ -88,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
 
         return convFile;
     }
-    
+
     private void addSong(MultipartFile songFile)
             throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException,
             NullPointerException {
@@ -161,15 +161,7 @@ public class AdminServiceImpl implements AdminService {
     private void availSongToAllUsers(String songId, String songUrl) {
         List<StoredUser> userList = userDao.findAll();
         for (StoredUser user : userList) {
-            Emotion songEmotion = null;
-            try {
-                // todo: use kafka
-                songEmotion = userSongModelService.predictEmotion(user.getTrainingModelId(), songUrl);
-            } catch (IOException e) {
-                log.error("Error while adding user song mapping for user {} and song {}", user.getId(), songId, e);
-            }
-
-            persistUserSongMapping(user.getId(), songId, songEmotion);
+            predictEmotionAndPersistMapping(user.getId(), songId, songUrl, user.getTrainingModelId());
         }
     }
 
@@ -199,17 +191,22 @@ public class AdminServiceImpl implements AdminService {
         return title;
     }
 
-    public void availAllSongsToUser(String userId, String trainingModelId) {
-        List<StoredSong> songList = songsDao.getAll();
+    private void availAllSongsToUser(String userId, String trainingModelId) {
+        List<StoredSong> songList = songsDao.getAllSongs();
         songList.forEach(song -> {
-            Emotion songEmotion = null;
-            try {
-                songEmotion = userSongModelService.predictEmotion(trainingModelId, song.getSongUrl());
-            } catch (IOException e) {
-                log.error("Error while adding user song mapping for user {} and song {}", userId, song.getId(), e);
-            }
-
-            userSongMappingDao.addMapping(userId, song.getId(), songEmotion);
+            predictEmotionAndPersistMapping(userId, song.getId(), song.getSongUrl(), trainingModelId);
         });
+    }
+
+    private void predictEmotionAndPersistMapping(
+            String userId, String songId, String songUrl, String trainingModelId) {
+        Emotion songEmotion = null;
+        try {
+            songEmotion = userSongModelService.predictEmotion(trainingModelId, songUrl);
+        } catch (IOException e) {
+            log.error("Error while adding user song mapping for user {} and song {}", userId, songId, e);
+        }
+
+        persistUserSongMapping(userId, songId, songEmotion);
     }
 }
