@@ -14,14 +14,17 @@ public interface UserSongMappingRepository
 
 
     @Query(value =
-            "select * from user_song_emotion_mapping where user_id = ?1 and song_id > ?2 order by song_id limit ?3",
+            "select * from user_song_emotion_mapping"
+                    + " where user_id = ?1"
+                    + " and song_id >= ?2"
+                    + " order by song_id limit ?3",
             nativeQuery = true
     )
     List<StoredUserSongMapping> findPaginatedAllSongsForUser(String userId, String songId, int pageSize);
 
     @Query(value =
             "select * from user_song_emotion_mapping"
-                    + " where user_id = ?1 and song_id > ?2"
+                    + " where user_id = ?1 and song_id >= ?2"
                     + " and emotion = ?3 order by song_id limit ?4",
             nativeQuery = true
     )
@@ -29,7 +32,7 @@ public interface UserSongMappingRepository
 
     @Query(value =
             "select * from user_song_emotion_mapping"
-                    + " where user_id = ?1 and song_id > ?2"
+                    + " where user_id = ?1 and song_id >= ?2"
                     + " and is_liked = 1"
                     + " order by song_id limit ?3",
             nativeQuery = true
