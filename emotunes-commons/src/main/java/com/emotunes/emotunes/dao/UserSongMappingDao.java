@@ -26,9 +26,9 @@ public class UserSongMappingDao {
         userSongMappingRepository.save(UserSongMappingMapper.toEntity(userId, songId, emotion));
     }
 
-    public List<SongMetadata> getAllSongs(String userId) {
+    public List<SongMetadata> getPaginatedAllSongsForUser(String userId, String songId, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
-                userSongMappingRepository.findAllSongsOfUser(userId);
+                userSongMappingRepository.findPaginatedAllSongsForUser(userId, songId, pageSize);
 
         return generateSongMetadataList(userSongMappingList);
     }
@@ -38,16 +38,16 @@ public class UserSongMappingDao {
         return null;
     }
 
-    public List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion) {
+    public List<SongMetadata> getPaginatedSongsByEmotionForUser(String userId, String songId, Emotion emotion, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
-                userSongMappingRepository.findAllSongsWithEmotionOfUser(userId, emotion.name());
+                userSongMappingRepository.findPaginatedSongsWithEmotionForUser(userId, songId, emotion.name(), pageSize);
 
         return generateSongMetadataList(userSongMappingList);
     }
 
-    public List<SongMetadata> getAllLikedSongs(String userId) {
+    public List<SongMetadata> getPaginatedLikedSongs(String userId, String songId, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
-                userSongMappingRepository.findAllLikedSongsOfUser(userId);
+                userSongMappingRepository.findPaginatedLikedSongsOfUser(userId, songId, pageSize);
 
         return generateSongMetadataList(userSongMappingList);
     }
