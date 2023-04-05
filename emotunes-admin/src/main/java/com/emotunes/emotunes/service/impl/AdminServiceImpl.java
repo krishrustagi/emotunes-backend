@@ -5,10 +5,11 @@ import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.dto.UserDto;
+import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
-import com.emotunes.emotunes.mapper.UserMapper;
 import com.emotunes.emotunes.service.AdminService;
+import com.emotunes.emotunes.service.UserSongModelService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
+    private final UserSongModelService userSongModelService;
 
     @Override
     public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
@@ -65,51 +67,13 @@ public class AdminServiceImpl implements AdminService {
         return "All songs uploaded successfully!";
     }
 
-    private void addSong(MultipartFile songFile)
-            throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException,
-            NullPointerException {
-
-        File file = convertToAudioFile(songFile);
-
-        try {
-            AudioFile audioFile = AudioFileIO.read(file);
-            Tag tag = audioFile.getTag();
-            String title = getTitle(tag);
-            String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
-
-            long duration = getDuration(audioFile);
-
-            String thumbnailUrl = saveThumbnail(tag);
-
-            SongMetadata songMetadata =
-                    SongMetadata.builder()
-                            .title(title)
-                            .duration(Instant.ofEpochSecond(duration).atZone(
-                                    ZoneId.of("UTC")
-                            ).toLocalTime().toString())
-                            .artist(artist)
-                            .thumbnailUrl(thumbnailUrl)
-                            .songUrl("") // todo: update url
-                            .build();
-
-            // todo: save mp3 song file
-
-            String songId = persistSong(songMetadata);
-
-            availSongToAllUsers(songId);
-
-        } catch (Exception e) {
-            log.error("Error while getting audio details! ", e);
-            throw e;
-        }
-    }
-
     @Override
     public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
-            userDao.save(UserMapper.toEntity(userDto));
-            // todo: add model space and rename model as the userId
-            userSongMappingDao.addSongsForUser(userDto.getUserId());
+            String trainingModelId = userDao.saveAndGetModelId(userDto);
+            // todo: add model of user
+            // todo: use kafka
+            availAllSongsToUser(userDto.getUserId(), trainingModelId);
             return "User added successfully!";
         }
 
@@ -124,6 +88,46 @@ public class AdminServiceImpl implements AdminService {
 
         return convFile;
     }
+    
+    private void addSong(MultipartFile songFile)
+            throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException,
+            NullPointerException {
+
+        File file = convertToAudioFile(songFile);
+        try {
+            AudioFile audioFile = AudioFileIO.read(file);
+            Tag tag = audioFile.getTag();
+            String title = getTitle(tag);
+            String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
+
+            long duration = getDuration(audioFile);
+
+            String thumbnailUrl = saveThumbnail(tag);
+            String songUrl = "";  // todo: update url
+            SongMetadata songMetadata =
+                    SongMetadata.builder()
+                            .title(title)
+                            .duration(Instant.ofEpochSecond(duration).atZone(
+                                    ZoneId.of("UTC")
+                            ).toLocalTime().toString())
+                            .artist(artist)
+                            .thumbnailUrl(thumbnailUrl)
+                            .songUrl(songUrl)
+                            .build();
+
+            // todo: save mp3 song file
+
+            String songId = persistSong(songMetadata);
+
+            availSongToAllUsers(songId, songUrl);
+
+        } catch (Exception e) {
+            log.error("Error while getting audio details! ", e);
+            throw e;
+        } finally {
+            Files.delete(file.toPath());
+        }
+    }
 
     private String persistSong(SongMetadata songMetadata) {
         // todo: save file with the song id;
@@ -131,7 +135,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private void persistUserSongMapping(String userId, String songId, Emotion emotion) {
-        userSongMappingDao.addSong(userId, songId, emotion);
+        userSongMappingDao.addMapping(userId, songId, emotion);
     }
 
     private long getDuration(AudioFile audioFile) {
@@ -154,14 +158,19 @@ public class AdminServiceImpl implements AdminService {
         return ""; // todo: return thumbnail url
     }
 
-    private void availSongToAllUsers(String songId) {
+    private void availSongToAllUsers(String songId, String songUrl) {
         List<StoredUser> userList = userDao.findAll();
-        userList.forEach(
-                user -> {
-                    // todo: predict song by model id (userId);
-                    persistUserSongMapping(user.getId(), songId, Emotion.HAPPY);
-                }
-        );
+        for (StoredUser user : userList) {
+            Emotion songEmotion = null;
+            try {
+                // todo: use kafka
+                songEmotion = userSongModelService.predictEmotion(user.getTrainingModelId(), songUrl);
+            } catch (IOException e) {
+                log.error("Error while adding user song mapping for user {} and song {}", user.getId(), songId, e);
+            }
+
+            persistUserSongMapping(user.getId(), songId, songEmotion);
+        }
     }
 
     private String checkForUnknownArtist(String s) {
@@ -188,5 +197,19 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return title;
+    }
+
+    public void availAllSongsToUser(String userId, String trainingModelId) {
+        List<StoredSong> songList = songsDao.getAll();
+        songList.forEach(song -> {
+            Emotion songEmotion = null;
+            try {
+                songEmotion = userSongModelService.predictEmotion(trainingModelId, song.getSongUrl());
+            } catch (IOException e) {
+                log.error("Error while adding user song mapping for user {} and song {}", userId, song.getId(), e);
+            }
+
+            userSongMappingDao.addMapping(userId, song.getId(), songEmotion);
+        });
     }
 }

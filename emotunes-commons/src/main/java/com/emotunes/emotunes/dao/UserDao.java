@@ -1,6 +1,8 @@
 package com.emotunes.emotunes.dao;
 
+import com.emotunes.emotunes.dto.UserDto;
 import com.emotunes.emotunes.entity.StoredUser;
+import com.emotunes.emotunes.mapper.UserMapper;
 import com.emotunes.emotunes.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +15,10 @@ public class UserDao {
 
     private final UserRepository userRepository;
 
-    public void save(StoredUser storedUser) {
-        userRepository.save(storedUser);
+    public String saveAndGetModelId(UserDto userDto) {
+        StoredUser user = UserMapper.toEntity(userDto);
+        userRepository.save(user);
+        return user.getTrainingModelId();
     }
 
     public StoredUser findByEmailId(String emailId) {
