@@ -22,4 +22,8 @@ public class SongsDao {
     public List<StoredSong> getAllSongs() {
         return songRepository.findAll();
     }
+
+    public String getLastFetchedSongId(Long offset) {
+        return songRepository.getLastFetchedSongId(offset);
+    }
 }

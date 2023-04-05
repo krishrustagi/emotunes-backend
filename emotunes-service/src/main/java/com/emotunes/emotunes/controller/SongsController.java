@@ -20,37 +20,41 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SongsController {
 
+    private static final int NUMBER_OF_SONGS_TO_BE_FETCHED = 50;
     private final SongService songService;
 
     @GetMapping("/all")
-    @ApiOperation("Get All Songs") // todo: add limit
+    @ApiOperation("Get Next Page Of Songs from All Category")
     public ResponseEntity<List<SongMetadata>> getAllSongs(
-            @RequestParam(value = "user_id") String userId) {
-        return ResponseEntity.ok(songService.getAllSongs(userId));
+            @RequestParam(value = "user_id") String userId,
+            @RequestParam(value = "offset") Long offset) {
+        return ResponseEntity.ok(songService.getAllSongs(userId, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
     }
 
     @GetMapping("/search")
-    @ApiOperation("Search songs by Prefix")
-    public ResponseEntity<List<SongMetadata>> getSongsByPrefix( // todo: edit distance
-                                                                @RequestParam("user_id") String userId,
-                                                                @RequestParam("prefix") String prefix) {
+    @ApiOperation("Search songs by Prefix")// todo: edit distance
+    public ResponseEntity<List<SongMetadata>> getSongsByPrefix (
+            @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix){
         return ResponseEntity.ok(songService.getSongsByPrefix(userId, prefix));
     }
 
     @GetMapping("/emotion")
-    @ApiOperation("Get Songs By Emotion") // todo: add paging
-    public ResponseEntity<List<SongMetadata>> getSongsByEmotion(
+    @ApiOperation("Get Next Page Of Songs By Emotion") // todo: add paging
+    public ResponseEntity<List<SongMetadata>> getSongsByEmotion (
             @RequestParam(value = "user_id") String userId,
-            @RequestParam(value = "emotion") Emotion emotion) {
-        return ResponseEntity.ok(songService.getSongsByEmotion(userId, emotion));
+            @RequestParam(value = "emotion") Emotion emotion,
+            @RequestParam(value = "offset") Long offset){
+        return ResponseEntity.ok(
+                songService.getSongsByEmotion(userId, emotion, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
     }
 
     @GetMapping("liked")
-    @ApiOperation("Get All liked songs")
-    public ResponseEntity<List<SongMetadata>> getLikedSongs( // todo: add paging
-                                                             @RequestParam("user_id") String userId) {
-        return ResponseEntity.ok(songService.getLikedSongs(userId));
-    }
+    @ApiOperation("Get Next Page Of liked songs")
+    public ResponseEntity<List<SongMetadata>> getLikedSongs (
+            @RequestParam("user_id") String userId,
+            @RequestParam(value = "offset") Long offset){
+        return ResponseEntity.ok(songService.getLikedSongs(userId, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
+        }
 
-    // todo: show liked songs based on emotions
-}
+        // todo: show liked songs based on emotions
+    }
