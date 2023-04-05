@@ -32,7 +32,8 @@ public class SongsController {
     @GetMapping("/search")
     @ApiOperation("Search songs by Prefix")
     public ResponseEntity<List<SongMetadata>> getSongsByPrefix( // todo: edit distance
-            @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix) {
+                                                                @RequestParam("user_id") String userId,
+                                                                @RequestParam("prefix") String prefix) {
         return ResponseEntity.ok(songService.getSongsByPrefix(userId, prefix));
     }
 
@@ -47,7 +48,7 @@ public class SongsController {
     @GetMapping("liked")
     @ApiOperation("Get All liked songs")
     public ResponseEntity<List<SongMetadata>> getLikedSongs( // todo: add paging
-            @RequestParam("user_id") String userId) {
+                                                             @RequestParam("user_id") String userId) {
         return ResponseEntity.ok(songService.getLikedSongs(userId));
     }
 

@@ -1,7 +1,9 @@
 import sys
 
+
 def predictEmotion(modelId, songUrl):
-    return "HAPPY" # todo prediction algorithm
+    return "HAPPY"  # todo prediction algorithm
+
 
 if __name__ == "__main__":
     modelId = sys.argv[1]
