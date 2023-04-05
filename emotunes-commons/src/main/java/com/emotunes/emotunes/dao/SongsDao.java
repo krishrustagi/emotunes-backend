@@ -15,4 +15,8 @@ public class SongsDao {
     public String addSong(SongMetadata songMetadata) {
         return songRepository.save(SongMapper.toSongEntity(songMetadata)).getId();
     }
+
+    public String getLastFetchedSongId(Long offset) {
+        return songRepository.getLastFetchedSongId(offset);
+    }
 }

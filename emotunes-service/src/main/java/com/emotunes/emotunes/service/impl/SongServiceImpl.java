@@ -1,5 +1,6 @@
 package com.emotunes.emotunes.service.impl;
 
+import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
@@ -14,10 +15,12 @@ import java.util.List;
 public class SongServiceImpl implements SongService {
 
     private final UserSongMappingDao userSongMappingDao;
+    private final SongsDao songsDao;
 
     @Override
-    public List<SongMetadata> getAllSongs(String userId) {
-        return userSongMappingDao.getAllSongs(userId);
+    public List<SongMetadata> getAllSongs(String userId, Long offset, int pageSize) {
+        String songId = songsDao.getLastFetchedSongId(offset);
+        return userSongMappingDao.getPaginatedAllSongsForUser(userId, songId, pageSize);
     }
 
     @Override
@@ -26,12 +29,14 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion) {
-        return userSongMappingDao.getSongsByEmotion(userId, emotion);
+    public List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion, Long offset, int pageSize) {
+        String songId = songsDao.getLastFetchedSongId(offset);
+        return userSongMappingDao.getPaginatedSongsByEmotionForUser(userId, songId, emotion, pageSize);
     }
 
     @Override
-    public List<SongMetadata> getLikedSongs(String userId) {
-        return userSongMappingDao.getAllLikedSongs(userId);
+    public List<SongMetadata> getLikedSongs(String userId, Long offset, int pageSize) {
+        String songId = songsDao.getLastFetchedSongId(offset);
+        return userSongMappingDao.getPaginatedLikedSongs(userId, songId, pageSize);
     }
 }
