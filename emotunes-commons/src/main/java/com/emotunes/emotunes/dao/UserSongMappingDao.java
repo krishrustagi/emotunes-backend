@@ -25,7 +25,7 @@ public class UserSongMappingDao {
     private final SongRepository songRepository;
     private final UserSongMappingRepository userSongMappingRepository;
 
-    public void addSong(String userId, String songId, Emotion emotion) {
+    public void addMapping(String userId, String songId, Emotion emotion) {
         userSongMappingRepository.save(UserSongMappingMapper.toEntity(userId, songId, emotion));
     }
 
@@ -52,14 +52,6 @@ public class UserSongMappingDao {
                 userSongMappingRepository.findPaginatedLikedSongsOfUser(userId, songId, pageSize);
 
         return getAndShuffleSongMetaDataList(userSongMappingList);
-    }
-
-    public void addSongsForUser(String userId) {
-        List<StoredSong> songList = songRepository.findAll();
-        songList.forEach(song -> {
-            Emotion songEmotion = Emotion.HAPPY; // todo: use pre-defined emotions the song
-            addSong(userId, song.getId(), songEmotion);
-        });
     }
 
     private List<SongMetadata> generateSongMetadataList(List<StoredUserSongMapping> userSongMappingList) {

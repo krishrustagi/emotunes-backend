@@ -33,27 +33,28 @@ public class SongsController {
 
     @GetMapping("/search")
     @ApiOperation("Search songs by Prefix")// todo: edit distance
-    public ResponseEntity<List<SongMetadata>> getSongsByPrefix(
-            @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix) {
+    public ResponseEntity<List<SongMetadata>> getSongsByPrefix (
+            @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix){
         return ResponseEntity.ok(songService.getSongsByPrefix(userId, prefix));
     }
 
     @GetMapping("/emotion")
     @ApiOperation("Get Next Page Of Songs By Emotion") // todo: add paging
-    public ResponseEntity<List<SongMetadata>> getSongsByEmotion(
+    public ResponseEntity<List<SongMetadata>> getSongsByEmotion (
             @RequestParam(value = "user_id") String userId,
             @RequestParam(value = "emotion") Emotion emotion,
-            @RequestParam(value = "offset") Long offset) {
-        return ResponseEntity.ok(songService.getSongsByEmotion(userId, emotion, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
+            @RequestParam(value = "offset") Long offset){
+        return ResponseEntity.ok(
+                songService.getSongsByEmotion(userId, emotion, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
     }
 
     @GetMapping("liked")
     @ApiOperation("Get Next Page Of liked songs")
-    public ResponseEntity<List<SongMetadata>> getLikedSongs(
+    public ResponseEntity<List<SongMetadata>> getLikedSongs (
             @RequestParam("user_id") String userId,
-            @RequestParam(value = "offset") Long offset) {
+            @RequestParam(value = "offset") Long offset){
         return ResponseEntity.ok(songService.getLikedSongs(userId, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
-    }
+        }
 
-    // todo: show liked songs based on emotions
-}
+        // todo: show liked songs based on emotions
+    }
