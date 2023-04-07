@@ -52,9 +52,9 @@ public class SongsController {
     @ApiOperation("Get Next Page Of liked songs")
     public ResponseEntity<List<SongMetadata>> getLikedSongs (
             @RequestParam("user_id") String userId,
-            @RequestParam(value = "offset") Long offset){
+            @RequestParam(value = "offset") Long offset) {
         return ResponseEntity.ok(songService.getLikedSongs(userId, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
-        }
+    }
 
         // todo: show liked songs based on emotions
-    }
+}
