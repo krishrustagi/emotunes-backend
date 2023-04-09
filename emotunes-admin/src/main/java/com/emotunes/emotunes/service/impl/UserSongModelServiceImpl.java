@@ -29,7 +29,7 @@ public class UserSongModelServiceImpl implements UserSongModelService {
 
         String response = runProcessBuilder(command);
 
-        return Emotion.HAPPY;
+        return Emotion.valueOf(response);
     }
 
     private String runProcessBuilder(List<String> command) throws IOException {
