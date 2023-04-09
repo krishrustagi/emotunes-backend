@@ -75,4 +75,9 @@ public class UserSongMappingDao {
     public void toggleLike(String userId, String songId) {
         userSongMappingRepository.toggleLike(userId, songId);
     }
+
+    @Transactional
+    public void updateSongEmotionForUser(String userId, String songId, Emotion correctEmotion) {
+        userSongMappingRepository.updateSongEmotionForUser(userId, songId, String.valueOf(correctEmotion));
+    }
 }

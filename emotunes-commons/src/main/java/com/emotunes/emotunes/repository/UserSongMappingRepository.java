@@ -48,4 +48,15 @@ public interface UserSongMappingRepository
             nativeQuery = true
     )
     void toggleLike(String userId, String songId);
+
+
+    @Modifying
+    @Query(value =
+            "update user_song_emotion_mapping"
+                    + " set emotion = ?3"
+                    + " where user_id = ?1"
+                    + " and song_id = ?2",
+            nativeQuery = true
+    )
+    void updateSongEmotionForUser(String userId, String songId, String correctEmotion);
 }

@@ -1,11 +1,10 @@
 package com.emotunes.emotunes.service.impl;
 
-import com.emotunes.emotunes.dao.SongAsPerEmotionDao;
+import com.emotunes.emotunes.dao.UserSongEmotionPreferenceDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.SongPlayerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,13 +12,14 @@ import org.springframework.stereotype.Service;
 public class SongPlayerServiceImpl implements SongPlayerService {
 
     private final UserSongMappingDao userSongMappingDao;
-    private final SongAsPerEmotionDao songAsPerEmotionDao;
+    private final UserSongEmotionPreferenceDao userSongEmotionPreferenceDao;
 
     @Override
-    public ResponseEntity<String> songNotPerEmotion(
+    public String userSongEmotionPreference(
             String userId, String songId, Emotion correctEmotion) {
-        songAsPerEmotionDao.save(userId, songId, correctEmotion);
-        return ResponseEntity.ok("Emotion suggested successfully!");
+        userSongEmotionPreferenceDao.save(userId, songId, correctEmotion);
+        userSongMappingDao.updateSongEmotionForUser(userId, songId, correctEmotion);
+        return "Emotion suggested successfully!";
     }
 
     @Override

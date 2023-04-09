@@ -28,13 +28,13 @@ public class SongPlayerController {
     }
 
     // todo: change function and api name
-    @PostMapping("/song_not_per_emotion")
-    @ApiOperation("Song not per emotion")
-    public ResponseEntity<String> songNotPerEmotion(
+    @PostMapping("/user_song_emotion_preference")
+    @ApiOperation("user song emotion preferences")
+    public ResponseEntity<String> userSongEmotionPreference(
             @RequestParam(value = "user_id", required = false) String userId,
             @RequestParam(value = "song_id") String songId,
             @RequestParam("correct_emotion") Emotion correctEmotion) {
-        return songPlayerService.songNotPerEmotion(
-                userId, songId, correctEmotion);
+        return ResponseEntity.ok(songPlayerService.userSongEmotionPreference(
+                userId, songId, correctEmotion));
     }
 }
