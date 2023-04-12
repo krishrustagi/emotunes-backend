@@ -29,7 +29,15 @@ public class UserSongModelServiceImpl implements UserSongModelService {
 
         String response = runProcessBuilder(command);
 
-        return Emotion.valueOf(response.trim());
+        Emotion emotion;
+        try {
+            emotion = Emotion.valueOf(response.trim());
+        } catch (NullPointerException e) { // todo: proper handling for such cases
+            log.error("Error while fetching emotion!", e);
+            emotion = Emotion.NEUTRAL;
+        }
+
+        return emotion;
     }
 
     private String runProcessBuilder(List<String> command) throws IOException {
