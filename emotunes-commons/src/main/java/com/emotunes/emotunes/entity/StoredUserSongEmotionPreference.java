@@ -13,9 +13,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "song_as_per_emotion", indexes = {
+@Table(name = "user_song_emotion_preference", indexes = {
         @Index(name = "unique_idx", columnList = "userId, songId", unique = true)})
-public class StoredSongAsPerEmotion extends BaseEntity {
+public class StoredUserSongEmotionPreference extends BaseEntity {
 
     @Id
     private String id;
