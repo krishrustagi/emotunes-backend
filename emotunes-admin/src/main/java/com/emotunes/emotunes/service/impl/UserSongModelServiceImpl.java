@@ -27,12 +27,11 @@ public class UserSongModelServiceImpl implements UserSongModelService {
         command.add(trainingModelId);
         command.add(songUrl);
 
-        String response = runProcessBuilder(command);
-
         Emotion emotion;
         try {
+            String response = runProcessBuilder(command);
             emotion = Emotion.valueOf(response.trim());
-        } catch (NullPointerException e) { // todo: proper handling for such cases
+        } catch (Exception e) { // todo: proper handling for such cases
             log.error("Error while fetching emotion!", e);
             emotion = Emotion.NEUTRAL;
         }
