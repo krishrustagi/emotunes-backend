@@ -13,6 +13,7 @@ public class SongMapper {
 
     public static SongMetadata toSongMetadata(StoredSong song, Emotion emotion, boolean isLiked) {
         return SongMetadata.builder()
+                .songId(song.getId())
                 .title(song.getTitle())
                 .duration(song.getDuration().toString())
                 .emotion(emotion)
