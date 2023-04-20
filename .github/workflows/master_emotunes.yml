@@ -48,6 +48,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'emotunes'
-          slot-name: 'Production'
+          slot-name: 'prod'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B55C1982F19F463EB6F9B9117E231E90 }}
           package: '*.jar'
