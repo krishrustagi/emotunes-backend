@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: prod
   jpa:
     hibernate:
       ddl-auto: update
@@ -9,7 +11,6 @@ spring:
     url: jdbc:sqlserver://emotunes-prod.database.windows.net:1433;database=emotunes;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
     username: emotunes
     password: COMPUTER$science
-  #    driver-class-name: com.sql.cj.jdbc.Driver
   servlet:
     multipart:
       max-request-size: 20MB
