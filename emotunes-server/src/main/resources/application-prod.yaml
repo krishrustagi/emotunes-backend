@@ -1,0 +1,21 @@
+server:
+  port: 8082
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.SQLServerDialect
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    show-sql: true
+  datasource:
+    url: jdbc:sqlserver://emotunes-prod.database.windows.net:1433;database=emotunes;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: emotunes
+    password: COMPUTER$science
+  #    driver-class-name: com.sql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      max-request-size: 20MB
+      max-file-size: 20MB
+  kafka:
+    bootstrap-servers: localhost:9092
