@@ -114,7 +114,7 @@
                     <schemaVersion>V2</schemaVersion>
                     <appName>emotunes</appName>
                     <runtime>
-                        <os>windows</os>
+                        <os>linux</os>
                         <javaVersion>java11</javaVersion>
                         <webContainer>java11</webContainer>
                     </runtime>
