@@ -106,6 +106,30 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-webapp-maven-plugin</artifactId>
+                <version>1.8.0</version>
+                <configuration>
+                    <schemaVersion>V2</schemaVersion>
+                    <appName>emotunes</appName>
+                    <runtime>
+                        <os>windows</os>
+                        <javaVersion>java11</javaVersion>
+                        <webContainer>java11</webContainer>
+                    </runtime>
+                    <deployment>
+                        <resources>
+                            <resource>
+                                <directory>${project.basedir}/emotunes-server/target</directory>
+                                <includes>
+                                    <include>*.jar</include>
+                                </includes>
+                            </resource>
+                        </resources>
+                    </deployment>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
