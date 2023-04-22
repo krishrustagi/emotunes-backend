@@ -42,10 +42,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: java-app
-      - name: Check directory contents
-        run: |
-          pwd
-          ls -l
+      - name: Change file permissions of JAR file
+        run: chmod +x ${{ github.workspace }}/java-app/*.jar
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
