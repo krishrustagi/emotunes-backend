@@ -93,9 +93,8 @@ public class AdminServiceImpl implements AdminService {
             throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException,
             NullPointerException {
 
-        File file = convertToAudioFile(songFile);
         try {
-            AudioFile audioFile = AudioFileIO.read(file);
+            AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
             Tag tag = audioFile.getTag();
             String title = getTitle(tag);
             String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
@@ -124,8 +123,6 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             log.error("Error while getting audio details! ", e);
             throw e;
-        } finally {
-            Files.delete(file.toPath());
         }
     }
 
