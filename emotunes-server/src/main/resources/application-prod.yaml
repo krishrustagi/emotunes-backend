@@ -9,6 +9,7 @@ spring:
     url: jdbc:sqlserver://emotunes-prod.database.windows.net:1433;database=emotunes;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
     username: emotunes
     password: COMPUTER$science
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   servlet:
     multipart:
       max-request-size: 500MB
