@@ -42,6 +42,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: java-app
+      - name: Check directory contents
+        run: |
+          pwd
+          ls -l
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -50,4 +54,4 @@ jobs:
           app-name: 'emotunes'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_629E939F9BBB46BD96ED9D8E0FEDC8F3 }}
-          package: '/*.jar'
+          package: '*.jar'
