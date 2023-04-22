@@ -82,6 +82,7 @@ public class AdminServiceImpl implements AdminService {
 
     private File convertToAudioFile(MultipartFile file) throws IOException {
         File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+        convFile.createNewFile();
         try (InputStream is = file.getInputStream()) {
             Files.copy(is, convFile.toPath());
         }
