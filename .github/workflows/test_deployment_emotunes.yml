@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy WAR app to Azure Web App - emotunes
+name: Build and deploy JAR app to Azure Web App - emotunes
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: emotunes
-          path: '${{ github.workspace }}/emotunes-server/target/*.war'
+          path: '${{ github.workspace }}/emotunes-server/target/*.jar'
 
 
   deploy:
@@ -51,4 +51,4 @@ jobs:
           app-name: 'emotunes'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_832C8B186E884458BF7BA755F87A23AF }}
-          package: '*.war'
+          package: '*.jar'
