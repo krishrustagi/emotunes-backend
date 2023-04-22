@@ -43,7 +43,7 @@ jobs:
         with:
           name: java-app
       - name: Change file permissions of JAR file
-        run: chmod +x ${{ github.workspace }}/java-app/*.jar
+        run: chmod +x *.jar
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
