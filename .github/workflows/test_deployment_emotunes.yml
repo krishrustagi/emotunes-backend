@@ -22,13 +22,13 @@ jobs:
           java-version: '11'
 
       - name: Build with Maven
-        run: mvn package
-
+        run: mvn clean install
+        
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: java-app
-          path: '${{ github.workspace }}/emotunes-server/target/*.jar'
+          path: '${{ github.workspace }}/*/target/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
