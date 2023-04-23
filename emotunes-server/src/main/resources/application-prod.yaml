@@ -6,9 +6,9 @@ spring:
     database-platform: org.hibernate.dialect.SQLServerDialect
     show-sql: true
   datasource:
-    url: jdbc:sqlserver://emotunes-prod.database.windows.net:1433;database=emotunes;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
-    username: emotunes
-    password: COMPUTER$science
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   servlet:
     multipart:
