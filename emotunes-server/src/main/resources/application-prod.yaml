@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       dialect: org.hibernate.dialect.SQLServerDialect
     database-platform: org.hibernate.dialect.SQLServerDialect
     show-sql: true

@@ -30,6 +30,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -79,8 +81,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private File convertToAudioFile(MultipartFile file) throws IOException {
-        File convFile = File.createTempFile("prefix-", "-suffix");
-        file.transferTo(convFile);
+        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+        try (InputStream is = file.getInputStream()) {
+            Files.copy(is, convFile.toPath());
+        }
 
         return convFile;
     }
