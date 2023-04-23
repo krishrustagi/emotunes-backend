@@ -36,7 +36,6 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
@@ -49,5 +48,5 @@ jobs:
         with:
           app-name: 'emotunes'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_629E939F9BBB46BD96ED9D8E0FEDC8F3 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B9389F8192EA4C35B74FEAE3A40C9DE2 }}
           package: '*.jar'
