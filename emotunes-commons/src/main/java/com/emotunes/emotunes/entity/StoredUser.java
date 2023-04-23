@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "user",
+@Table(name = "user_details",
         indexes =
         @Index(name = "unique_idx", columnList = "emailId", unique = true))
 public class StoredUser extends BaseEntity {
