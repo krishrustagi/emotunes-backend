@@ -7,14 +7,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-      dialect: org.hibernate.dialect.SQLServerDialect
-    database-platform: org.hibernate.dialect.SQLServerDialect
+      dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
   datasource:
     url: jdbc:mysql://localhost:3306/emotunes
     username: root
     password: root
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   servlet:
     multipart:
       max-request-size: 500MB
