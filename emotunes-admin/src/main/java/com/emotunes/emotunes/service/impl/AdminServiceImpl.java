@@ -21,7 +21,7 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.datatype.Artwork;
+import org.jaudiotagger.tag.images.Artwork;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,11 +81,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private File convertToAudioFile(MultipartFile file) throws IOException {
-        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        convFile.createNewFile();
-        try (InputStream is = file.getInputStream()) {
-            Files.copy(is, convFile.toPath());
-        }
+        File convFile = File.createTempFile("prefix-", "-suffix");
+        file.transferTo(convFile);
 
         return convFile;
     }
