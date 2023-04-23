@@ -95,10 +95,10 @@ public class AdminServiceImpl implements AdminService {
             NullPointerException {
 
         try {
-            AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
+            AudioFile audioFile = AudioFileIO.getDefaultAudioFileIO().readFile(convertToAudioFile(songFile));
             Tag tag = audioFile.getTag();
             String title = getTitle(tag);
-            String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
+            String artist = getArtistName(tag.getFirst(FieldKey.ARTIST));
 
             long duration = getDuration(audioFile);
 
@@ -163,7 +163,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    private String checkForUnknownArtist(String s) {
+    private String getArtistName(String s) {
         if (s == null) {
             return "UNKNOWN";
         }
