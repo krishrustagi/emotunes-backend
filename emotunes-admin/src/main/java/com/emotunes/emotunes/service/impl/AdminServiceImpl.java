@@ -30,8 +30,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -81,13 +79,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private File convertToAudioFile(MultipartFile file) throws IOException {
-        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        convFile.createNewFile();
-        try (InputStream is = file.getInputStream()) {
-            Files.copy(is, convFile.toPath());
-        }
-
-        return convFile;
+        File tempFile = File.createTempFile(Objects.requireNonNull(file.getOriginalFilename()), ".mp3");
+        file.transferTo(tempFile);
+        return tempFile;
     }
 
     private void addSong(MultipartFile songFile)
@@ -98,7 +92,7 @@ public class AdminServiceImpl implements AdminService {
             AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
             Tag tag = audioFile.getTag();
             String title = getTitle(tag);
-            String artist = checkForUnknownArtist(tag.getFirst(FieldKey.ARTIST));
+            String artist = getArtistName(tag.getFirst(FieldKey.ARTIST));
 
             long duration = getDuration(audioFile);
 
@@ -163,7 +157,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    private String checkForUnknownArtist(String s) {
+    private String getArtistName(String s) {
         if (s == null) {
             return "UNKNOWN";
         }
@@ -203,6 +197,7 @@ public class AdminServiceImpl implements AdminService {
             songEmotion = userSongModelService.predictEmotion(trainingModelId, songUrl);
         } catch (IOException e) {
             log.error("Error while adding user song mapping for user {} and song {}", userId, songId, e);
+            songEmotion = Emotion.NEUTRAL;
         }
 
         persistUserSongMapping(userId, songId, songEmotion);

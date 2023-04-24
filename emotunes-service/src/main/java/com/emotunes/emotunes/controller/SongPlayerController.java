@@ -31,7 +31,7 @@ public class SongPlayerController {
     @PostMapping("/user_song_emotion_preference")
     @ApiOperation("user song emotion preferences")
     public ResponseEntity<String> userSongEmotionPreference(
-            @RequestParam(value = "user_id", required = false) String userId,
+            @RequestParam(value = "user_id") String userId,
             @RequestParam(value = "song_id") String songId,
             @RequestParam("correct_emotion") Emotion correctEmotion) {
         return ResponseEntity.ok(songPlayerService.userSongEmotionPreference(
