@@ -197,6 +197,7 @@ public class AdminServiceImpl implements AdminService {
             songEmotion = userSongModelService.predictEmotion(trainingModelId, songUrl);
         } catch (IOException e) {
             log.error("Error while adding user song mapping for user {} and song {}", userId, songId, e);
+            songEmotion = Emotion.NEUTRAL;
         }
 
         persistUserSongMapping(userId, songId, songEmotion);
