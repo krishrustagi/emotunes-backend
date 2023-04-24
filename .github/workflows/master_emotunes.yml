@@ -48,5 +48,5 @@ jobs:
         with:
           app-name: 'emotunes'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B9389F8192EA4C35B74FEAE3A40C9DE2 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7D5CA72F2D0D4999B1107870EAEA5900 }}
           package: '*.jar'
