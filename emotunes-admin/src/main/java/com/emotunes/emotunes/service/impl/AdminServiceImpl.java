@@ -30,8 +30,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -81,12 +79,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private File convertToAudioFile(MultipartFile file) throws IOException {
-        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        try (InputStream is = file.getInputStream()) {
-            Files.copy(is, convFile.toPath());
-        }
-
-        return convFile;
+        File tempFile = File.createTempFile(Objects.requireNonNull(file.getOriginalFilename()), ".mp3");
+        file.transferTo(tempFile);
+        return tempFile;
     }
 
     private void addSong(MultipartFile songFile)
@@ -94,7 +89,7 @@ public class AdminServiceImpl implements AdminService {
             NullPointerException {
 
         try {
-            AudioFile audioFile = AudioFileIO.getDefaultAudioFileIO().readFile(convertToAudioFile(songFile));
+            AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
             Tag tag = audioFile.getTag();
             String title = getTitle(tag);
             String artist = getArtistName(tag.getFirst(FieldKey.ARTIST));
