@@ -6,7 +6,7 @@ name: Build and deploy JAR app to Azure Web App - emotunes
 on:
   push:
     branches:
-      - azure_api_fixes
+      - master
   workflow_dispatch:
 
 jobs:
