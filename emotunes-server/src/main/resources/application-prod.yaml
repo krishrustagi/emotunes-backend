@@ -6,9 +6,9 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
   datasource:
-    url: jdbc:mysql://emotunes.mysql.database.azure.com:3306/emotunes
-    username: emotunes
-    password: COMPUTER$science
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   servlet:
     multipart:
