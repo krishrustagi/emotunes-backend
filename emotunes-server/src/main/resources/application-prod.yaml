@@ -5,7 +5,7 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
   datasource:
-    url: jdbc:mysql://emotunes.mysql.database.azure.com:3306/{your_database}?useSSL=true";
+    url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
