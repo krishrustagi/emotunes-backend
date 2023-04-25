@@ -16,4 +16,6 @@ public class UserDto {
     private String emailId;
 
     private String name;
+
+    private String trainingModelUrl;
 }

@@ -4,6 +4,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.emotunes.emotunes.client.MachineLearningClient;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
@@ -13,7 +14,6 @@ import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.service.AdminService;
-import com.emotunes.emotunes.service.UserSongModelService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,7 @@ import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -53,7 +54,7 @@ public class AdminServiceImpl implements AdminService {
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
-    private final UserSongModelService userSongModelService;
+    private final MachineLearningClient machineLearningClient;
 
     @Override
     public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
@@ -76,10 +77,12 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
-            String trainingModelId = userDao.saveAndGetModelId(userDto);
+            String defaultModelWeightsUrl = "default"; // todo: update to default
+            userDto.setTrainingModelUrl(defaultModelWeightsUrl);
+            userDao.save(userDto);
             // todo: add model of user
             // todo: use kafka
-            availAllSongsToUser(userDto.getUserId(), trainingModelId);
+            availAllSongsToUser(userDto.getUserId(), defaultModelWeightsUrl);
             return "User added successfully!";
         }
 
@@ -164,7 +167,7 @@ public class AdminServiceImpl implements AdminService {
     private void availSongToAllUsers(String songId, String songUrl) {
         List<StoredUser> userList = userDao.findAll();
         for (StoredUser user : userList) {
-            predictEmotionAndPersistMapping(user.getId(), songId, songUrl, user.getTrainingModelId());
+            predictEmotionAndPersistMapping(user.getId(), songId, songUrl, user.getModelWeightsUrl());
         }
     }
 
@@ -194,24 +197,22 @@ public class AdminServiceImpl implements AdminService {
         return title;
     }
 
-    private void availAllSongsToUser(String userId, String trainingModelId) {
+    private void availAllSongsToUser(String userId, String modelWeightsUrl) {
         List<StoredSong> songList = songsDao.getAllSongs();
         songList.forEach(song -> {
-            predictEmotionAndPersistMapping(userId, song.getId(), song.getSongUrl(), trainingModelId);
+            predictEmotionAndPersistMapping(userId, song.getId(), song.getSongUrl(), modelWeightsUrl);
         });
     }
 
     private void predictEmotionAndPersistMapping(
-            String userId, String songId, String songUrl, String trainingModelId) {
-        Emotion songEmotion = null;
-        try {
-            songEmotion = userSongModelService.predictEmotion(trainingModelId, songUrl);
-        } catch (IOException e) {
-            log.error("Error while adding user song mapping for user {} and song {}", userId, songId, e);
-            songEmotion = Emotion.NEUTRAL;
-        }
+            String userId, String songId, String songUrl, String modelWeightsUrl) {
 
-        persistUserSongMapping(userId, songId, songEmotion);
+        LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("song_url", songUrl);
+        map.add("model_weights_url", modelWeightsUrl);
+
+        String songEmotion = machineLearningClient.predictEmotion(map);
+        persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
     }
 
     private String uploadAndGetUrl(String containerName, InputStream inputStream, String fileName, long fileSize) {
