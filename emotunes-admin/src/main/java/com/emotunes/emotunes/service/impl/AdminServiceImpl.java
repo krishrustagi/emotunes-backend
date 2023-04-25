@@ -46,7 +46,7 @@ import java.util.Objects;
 public class AdminServiceImpl implements AdminService {
 
     @Value("${azure.storage.connection-string}")
-    private final String connectionString;
+    private String connectionString;
 
     private static final int BULK_SONGS_LIMIT = 50;
 
