@@ -40,6 +40,9 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
+import static com.emotunes.emotunes.constants.AzureStorageCommons.SONGS_CONTAINER;
+import static com.emotunes.emotunes.constants.AzureStorageCommons.THUMBNAILS_CONTAINER;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -225,12 +228,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private String uploadSongFileAndGetUrl(MultipartFile file) throws IOException {
-        return uploadAndGetUrl("songs", file.getInputStream(), file.getOriginalFilename(), file.getSize());
+        return uploadAndGetUrl(SONGS_CONTAINER, file.getInputStream(), file.getOriginalFilename(), file.getSize());
     }
 
     private String uploadThumbnailAndGetUrl(File file) throws IOException {
         try (InputStream inputStream = new FileInputStream(file)) {
-            return uploadAndGetUrl("thumbnails", inputStream, file.getName(), file.length());
+            return uploadAndGetUrl(THUMBNAILS_CONTAINER, inputStream, file.getName(), file.length());
         } catch (Exception e) {
             return ""; // todo: return default thumbnail url
         }
