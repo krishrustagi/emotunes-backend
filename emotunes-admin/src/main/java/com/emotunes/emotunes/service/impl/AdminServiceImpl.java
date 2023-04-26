@@ -1,13 +1,6 @@
 package com.emotunes.emotunes.service.impl;
 
-<<<<<<<HEAD
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.emotunes.emotunes.client.MachineLearningClient;
-=======
-        >>>>>>>614a444c06e7e0f7a93f0007ef7ea968b62e222d
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
@@ -58,12 +51,8 @@ public class AdminServiceImpl implements AdminService {
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
-<<<<<<<HEAD
     private final MachineLearningClient machineLearningClient;
-=======
-    private final UserSongModelService userSongModelService;
     private final AdminHelper adminHelper;
->>>>>>>614a444c06e7e0f7a93f0007ef7ea968b62e222d
 
     @Override
 
