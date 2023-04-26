@@ -40,8 +40,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
-import static com.emotunes.emotunes.constants.AzureStorageConstans.SONGS_CONTAINER;
-import static com.emotunes.emotunes.constants.AzureStorageConstans.THUMBNAILS_CONTAINER;
+import static com.emotunes.emotunes.constants.AzureStorageConstans.*;
 
 @Service
 @RequiredArgsConstructor
@@ -161,7 +160,7 @@ public class AdminServiceImpl implements AdminService {
             Files.delete(Path.of(thumbnailFileName + ".jpg"));
         }
 
-        return ""; // todo: return default thumbnail url
+        return DEFAULT_THUMBNAIL_URL;
     }
 
     private void availSongToAllUsers(String songId, String songUrl) {
@@ -231,11 +230,11 @@ public class AdminServiceImpl implements AdminService {
         return uploadAndGetUrl(SONGS_CONTAINER, file.getInputStream(), file.getOriginalFilename(), file.getSize());
     }
 
-    private String uploadThumbnailAndGetUrl(File file) throws IOException {
+    private String uploadThumbnailAndGetUrl(File file) {
         try (InputStream inputStream = new FileInputStream(file)) {
             return uploadAndGetUrl(THUMBNAILS_CONTAINER, inputStream, file.getName(), file.length());
         } catch (Exception e) {
-            return ""; // todo: return default thumbnail url
+            return DEFAULT_THUMBNAIL_URL;
         }
     }
 }
