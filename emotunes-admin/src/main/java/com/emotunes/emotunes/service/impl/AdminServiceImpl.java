@@ -1,10 +1,13 @@
 package com.emotunes.emotunes.service.impl;
 
+<<<<<<<HEAD
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.emotunes.emotunes.client.MachineLearningClient;
+=======
+        >>>>>>>614a444c06e7e0f7a93f0007ef7ea968b62e222d
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
@@ -13,6 +16,7 @@ import com.emotunes.emotunes.dto.UserDto;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
+import com.emotunes.emotunes.helper.AdminHelper;
 import com.emotunes.emotunes.service.AdminService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +30,15 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -41,22 +46,27 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
+import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_THUMBNAIL_URL;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AdminServiceImpl implements AdminService {
-
-    @Value("${azure.storage.connection-string}")
-    private String connectionString;
 
     private static final int BULK_SONGS_LIMIT = 50;
 
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
+<<<<<<<HEAD
     private final MachineLearningClient machineLearningClient;
+=======
+    private final UserSongModelService userSongModelService;
+    private final AdminHelper adminHelper;
+>>>>>>>614a444c06e7e0f7a93f0007ef7ea968b62e222d
 
     @Override
+
     public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
         if (songFiles.size() > BULK_SONGS_LIMIT) {
             throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
@@ -100,7 +110,7 @@ public class AdminServiceImpl implements AdminService {
             NullPointerException {
 
         try {
-            String songUrl = uploadSongFileAndGetUrl(songFile);
+            String songUrl = adminHelper.uploadSongFileAndGetUrl(songFile);
             AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
             Tag tag = audioFile.getTag();
             String title = getTitle(tag);
@@ -152,7 +162,7 @@ public class AdminServiceImpl implements AdminService {
             BufferedImage bufferedImage = ImageIO.read(inputStream);
             ImageIO.write(bufferedImage, "jpg", thumbnail);
 
-            String thumbnailUrl = uploadThumbnailAndGetUrl(thumbnail);
+            String thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
             log.info("thumbnail Url: {}", thumbnailUrl);
             return thumbnailUrl;
         } catch (Exception e) {
@@ -161,7 +171,7 @@ public class AdminServiceImpl implements AdminService {
             Files.delete(Path.of(thumbnailFileName + ".jpg"));
         }
 
-        return ""; // todo: return default thumbnail url
+        return DEFAULT_THUMBNAIL_URL;
     }
 
     private void availSongToAllUsers(String songId, String songUrl) {
@@ -206,34 +216,11 @@ public class AdminServiceImpl implements AdminService {
 
     private void predictEmotionAndPersistMapping(
             String userId, String songId, String songUrl, String modelWeightsUrl) {
-
         LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("song_url", songUrl);
         map.add("model_weights_url", modelWeightsUrl);
 
         String songEmotion = machineLearningClient.predictEmotion(map);
         persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
-    }
-
-    private String uploadAndGetUrl(String containerName, InputStream inputStream, String fileName, long fileSize) {
-        BlobServiceClient blobServiceClient =
-                new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
-        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.getBlobClient(fileName);
-        blobClient.upload(inputStream, fileSize);
-
-        return blobClient.getBlobUrl();
-    }
-
-    private String uploadSongFileAndGetUrl(MultipartFile file) throws IOException {
-        return uploadAndGetUrl("songs", file.getInputStream(), file.getOriginalFilename(), file.getSize());
-    }
-
-    private String uploadThumbnailAndGetUrl(File file) throws IOException {
-        try (InputStream inputStream = new FileInputStream(file)) {
-            return uploadAndGetUrl("thumbnails", inputStream, file.getName(), file.length());
-        } catch (Exception e) {
-            return ""; // todo: return default thumbnail url
-        }
     }
 }
