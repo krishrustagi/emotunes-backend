@@ -216,11 +216,12 @@ public class AdminServiceImpl implements AdminService {
 
     private void predictEmotionAndPersistMapping(
             String userId, String songId, String songUrl, String modelWeightsUrl) {
-        LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("song_url", songUrl);
-        map.add("model_weights_url", modelWeightsUrl);
 
-        String songEmotion = machineLearningClient.predictEmotion(map);
+        LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+        multiValueMap.add("song_url", songUrl);
+        multiValueMap.add("model_weights_url", modelWeightsUrl);
+
+        String songEmotion = machineLearningClient.predictEmotion(multiValueMap);
         persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
     }
 }
