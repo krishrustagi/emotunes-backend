@@ -3,7 +3,7 @@ package com.emotunes.emotunes.constants;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class AzureStorageCommons {
+public class AzureStorageConstans {
 
     public static final String SONGS_CONTAINER = "songs";
 

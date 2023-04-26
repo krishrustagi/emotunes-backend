@@ -40,8 +40,8 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
-import static com.emotunes.emotunes.constants.AzureStorageCommons.SONGS_CONTAINER;
-import static com.emotunes.emotunes.constants.AzureStorageCommons.THUMBNAILS_CONTAINER;
+import static com.emotunes.emotunes.constants.AzureStorageConstans.SONGS_CONTAINER;
+import static com.emotunes.emotunes.constants.AzureStorageConstans.THUMBNAILS_CONTAINER;
 
 @Service
 @RequiredArgsConstructor
