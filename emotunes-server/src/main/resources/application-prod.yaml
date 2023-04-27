@@ -16,6 +16,6 @@ spring:
       max-file-size: 500MB
   kafka:
     bootstrap-servers: localhost:9092
-  azure:
-    storage:
-      connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+azure:
+  storage:
+    connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
