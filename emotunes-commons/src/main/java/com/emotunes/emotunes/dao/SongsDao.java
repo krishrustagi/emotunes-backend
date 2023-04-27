@@ -2,6 +2,7 @@ package com.emotunes.emotunes.dao;
 
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSong;
+import com.emotunes.emotunes.entity.StoredUserSongMapping;
 import com.emotunes.emotunes.mapper.SongMapper;
 import com.emotunes.emotunes.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,9 @@ public class SongsDao {
 
     public String getLastFetchedSongId(Long offset) {
         return songRepository.getLastFetchedSongId(offset);
+    }
+
+    public List<String> getSongsByPrefix(String prefix, Long offset, int pageSize) {
+        return songRepository.findPaginatedSongsByPrefix(prefix, pageSize, offset);
     }
 }

@@ -35,10 +35,6 @@ public class UserSongMappingDao {
         return getAndShuffleSongMetaDataList(userSongMappingList);
     }
 
-    public List<SongMetadata> getSongsByPrefix(String userId, String prefix) {
-        // todo: find using edit distance/trie
-        return null;
-    }
 
     public List<SongMetadata> getPaginatedSongsByEmotionForUser(String userId, String songId, Emotion emotion, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
@@ -51,6 +47,11 @@ public class UserSongMappingDao {
         List<StoredUserSongMapping> userSongMappingList =
                 userSongMappingRepository.findPaginatedLikedSongsOfUser(userId, songId, pageSize);
 
+        return getAndShuffleSongMetaDataList(userSongMappingList);
+    }
+    public List<SongMetadata> getSongsForUserAndSongIds(String userId, List<String> songIdList) {
+        List<StoredUserSongMapping> userSongMappingList =
+                userSongMappingRepository.getSongsDetailsForUserAndSongIds(userId, songIdList);
         return getAndShuffleSongMetaDataList(userSongMappingList);
     }
 
@@ -80,4 +81,5 @@ public class UserSongMappingDao {
     public void updateSongEmotionForUser(String userId, String songId, Emotion correctEmotion) {
         userSongMappingRepository.updateSongEmotionForUser(userId, songId, String.valueOf(correctEmotion));
     }
+
 }

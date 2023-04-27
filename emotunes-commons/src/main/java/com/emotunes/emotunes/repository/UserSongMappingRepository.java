@@ -59,4 +59,11 @@ public interface UserSongMappingRepository
             nativeQuery = true
     )
     void updateSongEmotionForUser(String userId, String songId, String correctEmotion);
+
+    @Query(value =
+            "select * from user_song_emotion_mapping"
+                    + " where user_id = ?1 and song_id in ?2",
+            nativeQuery = true
+    )
+    List<StoredUserSongMapping> getSongsDetailsForUserAndSongIds(String userId, List<String> songIdList);
 }

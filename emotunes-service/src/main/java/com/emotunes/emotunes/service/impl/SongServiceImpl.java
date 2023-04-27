@@ -24,8 +24,9 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public List<SongMetadata> getSongsByPrefix(String userId, String prefix) {
-        return userSongMappingDao.getSongsByPrefix(userId, prefix);
+    public List<SongMetadata> getSongsByPrefix(String userId, String prefix, Long offset, int pageSize) {
+        List<String> songIdList = songsDao.getSongsByPrefix(prefix, offset, pageSize);
+        return userSongMappingDao.getSongsForUserAndSongIds(userId, songIdList);
     }
 
     @Override
