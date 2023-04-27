@@ -52,6 +52,7 @@ public class UserSongMappingDao {
     public List<SongMetadata> getSongsDetailsForUserAndSongIds(String userId, List<String> songIdList) {
         List<StoredUserSongMapping> userSongMappingList =
                 userSongMappingRepository.getSongsDetailsForUserAndSongIds(userId, songIdList);
+        return getAndShuffleSongMetaDataList(userSongMappingList);
     }
 
     private List<SongMetadata> generateSongMetadataList(List<StoredUserSongMapping> userSongMappingList) {
