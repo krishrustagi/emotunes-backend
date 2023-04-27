@@ -47,7 +47,7 @@ import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_THUMB
 public class AdminServiceImpl implements AdminService {
 
     @Value("${spring.profiles.active:prod}")
-    private String profile;
+    private String env;
 
     private static final int BULK_SONGS_LIMIT = 50;
 
@@ -100,7 +100,7 @@ public class AdminServiceImpl implements AdminService {
 
         try {
             String songUrl = null;
-            if (!Objects.equals(profile, "local"))
+            if (!Objects.equals(env, "local"))
                 songUrl = adminHelper.uploadSongFileAndGetUrl(songFile);
 
             AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
@@ -155,7 +155,7 @@ public class AdminServiceImpl implements AdminService {
             ImageIO.write(bufferedImage, "jpg", thumbnail);
 
             String thumbnailUrl = null;
-            if (!Objects.equals(profile, "local"))
+            if (!Objects.equals(env, "local"))
                     thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
 
             return thumbnailUrl;
