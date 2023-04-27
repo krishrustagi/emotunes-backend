@@ -17,9 +17,8 @@ public interface SongRepository extends JpaRepository<StoredSong, String> {
     String getLastFetchedSongId(Long offset);
 
 
-    @Query(value =
-            "select id from song where id>=?2 and title like CONCAT('%', ?1, '%') order by id offset ?2 limit ?3",
+    @Query(value = "select id from song where title like CONCAT('%', ?1, '%') order by id limit ?2 offset ?3",
             nativeQuery = true
     )
-    List<String> findPaginatedSongsByPrefix(String prefix, Long offset, int pageSize);
+    List<String> findPaginatedSongsByPrefix(String prefix, int pageSize, Long offset);
 }

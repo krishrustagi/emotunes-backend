@@ -29,6 +29,6 @@ public class SongsDao {
     }
 
     public List<String> getSongsByPrefix(String prefix, Long offset, int pageSize) {
-        return songRepository.findPaginatedSongsByPrefix(prefix, offset, pageSize);
+        return songRepository.findPaginatedSongsByPrefix(prefix, pageSize, offset);
     }
 }
