@@ -4,7 +4,6 @@ import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.enums.Emotion;
-import com.emotunes.emotunes.mapper.SongMapper;
 import com.emotunes.emotunes.service.SongService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class SongServiceImpl implements SongService {
     @Override
     public List<SongMetadata> getSongsByPrefix(String userId, String prefix, Long offset, int pageSize) {
         List<String> songIdList = songsDao.getSongsByPrefix(prefix, offset, pageSize);
-        return userSongMappingDao.getSongsDetailsForUserAndSongIds(userId, songIdList);
+        return userSongMappingDao.getSongsForUserAndSongIds(userId, songIdList);
     }
 
     @Override
