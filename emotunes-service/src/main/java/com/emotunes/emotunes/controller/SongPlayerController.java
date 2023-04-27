@@ -27,7 +27,6 @@ public class SongPlayerController {
         return ResponseEntity.ok(songPlayerService.toggleLike(userId, songId));
     }
 
-    // todo: change function and api name
     @PostMapping("/user_song_emotion_preference")
     @ApiOperation("user song emotion preferences")
     public ResponseEntity<String> userSongEmotionPreference(

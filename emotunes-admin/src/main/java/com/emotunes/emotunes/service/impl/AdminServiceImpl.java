@@ -60,7 +60,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
 
-    public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
+    public String addSongs(List<MultipartFile> songFiles) {
         if (songFiles.size() > BULK_SONGS_LIMIT) {
             throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
         } else {
@@ -83,8 +83,7 @@ public class AdminServiceImpl implements AdminService {
             String defaultModelWeightsUrl = "default"; // todo: update to default
             userDto.setModelWeightsUrl(defaultModelWeightsUrl);
             userDao.save(userDto);
-            // todo: add model of user
-            // todo: use kafka
+
             availAllSongsToUser(userDto.getUserId(), defaultModelWeightsUrl);
             return "User added successfully!";
         }
