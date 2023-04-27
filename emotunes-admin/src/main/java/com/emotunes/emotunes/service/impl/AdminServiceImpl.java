@@ -8,6 +8,7 @@ import com.emotunes.emotunes.dto.UserDto;
 import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
+import com.emotunes.emotunes.helper.AdminHelper;
 import com.emotunes.emotunes.service.AdminService;
 import com.emotunes.emotunes.service.UserSongModelService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
@@ -22,6 +23,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,15 +32,22 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
+import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_THUMBNAIL_URL;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AdminServiceImpl implements AdminService {
+
+    @Value("${spring.profiles.active:prod}")
+    private String env;
 
     private static final int BULK_SONGS_LIMIT = 50;
 
@@ -46,6 +55,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
     private final UserSongModelService userSongModelService;
+    private final AdminHelper adminHelper;
 
     @Override
     public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
@@ -89,6 +99,10 @@ public class AdminServiceImpl implements AdminService {
             NullPointerException {
 
         try {
+            String songUrl = null;
+            if (!Objects.equals(env, "local"))
+                songUrl = adminHelper.uploadSongFileAndGetUrl(songFile);
+
             AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
             Tag tag = audioFile.getTag();
             String title = getTitle(tag);
@@ -96,8 +110,7 @@ public class AdminServiceImpl implements AdminService {
 
             long duration = getDuration(audioFile);
 
-            String thumbnailUrl = saveThumbnail(tag);
-            String songUrl = "";  // todo: update url
+            String thumbnailUrl = saveThumbnail(tag, title);
             SongMetadata songMetadata =
                     SongMetadata.builder()
                             .title(title)
@@ -108,8 +121,6 @@ public class AdminServiceImpl implements AdminService {
                             .thumbnailUrl(thumbnailUrl)
                             .songUrl(songUrl)
                             .build();
-
-            // todo: save mp3 song file
 
             String songId = persistSong(songMetadata);
 
@@ -122,7 +133,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private String persistSong(SongMetadata songMetadata) {
-        // todo: save file with the song id;
         return songsDao.addSong(songMetadata);
     }
 
@@ -134,20 +144,28 @@ public class AdminServiceImpl implements AdminService {
         return audioFile.getAudioHeader().getTrackLength();
     }
 
-    private String saveThumbnail(Tag tag) throws IOException {
+    private String saveThumbnail(Tag tag, String title) throws IOException {
         Artwork artwork = tag.getFirstArtwork();
-        if (artwork != null) {
+        String thumbnailFileName = IdGenerationUtil.getRandomId();
+        File thumbnail = new File(thumbnailFileName + ".jpg");
+        try {
             byte[] imageData = artwork.getBinaryData();
-            String thumbnailFileName = IdGenerationUtil.getRandomId();
-            File thumbnail = new File(thumbnailFileName + ".jpg");
             ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
             BufferedImage bufferedImage = ImageIO.read(inputStream);
             ImageIO.write(bufferedImage, "jpg", thumbnail);
 
-            // save thumbnail file with thumbnailFileName
+            String thumbnailUrl = null;
+            if (!Objects.equals(env, "local"))
+                    thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
+
+            return thumbnailUrl;
+        } catch (Exception e) {
+            log.error("Error while fetching thumbnail!", e);
+        } finally {
+            Files.delete(Path.of(thumbnailFileName + ".jpg"));
         }
 
-        return ""; // todo: return thumbnail url
+        return DEFAULT_THUMBNAIL_URL;
     }
 
     private void availSongToAllUsers(String songId, String songUrl) {
@@ -192,7 +210,7 @@ public class AdminServiceImpl implements AdminService {
 
     private void predictEmotionAndPersistMapping(
             String userId, String songId, String songUrl, String trainingModelId) {
-        Emotion songEmotion = null;
+        Emotion songEmotion;
         try {
             songEmotion = userSongModelService.predictEmotion(trainingModelId, songUrl);
         } catch (IOException e) {
