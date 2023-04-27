@@ -23,6 +23,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +46,9 @@ import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_THUMB
 @RequiredArgsConstructor
 @Slf4j
 public class AdminServiceImpl implements AdminService {
+
+    @Value("${spring.profiles.active:prod}")
+    private String profile;
 
     private static final int BULK_SONGS_LIMIT = 50;
 
@@ -99,7 +103,10 @@ public class AdminServiceImpl implements AdminService {
             NullPointerException {
 
         try {
-            String songUrl = adminHelper.uploadSongFileAndGetUrl(songFile);
+            String songUrl = null;
+            if (!Objects.equals(profile, "local"))
+                songUrl = adminHelper.uploadSongFileAndGetUrl(songFile);
+
             AudioFile audioFile = AudioFileIO.read(convertToAudioFile(songFile));
             Tag tag = audioFile.getTag();
             String title = getTitle(tag);
@@ -151,11 +158,13 @@ public class AdminServiceImpl implements AdminService {
             BufferedImage bufferedImage = ImageIO.read(inputStream);
             ImageIO.write(bufferedImage, "jpg", thumbnail);
 
-            String thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
-            log.info("thumbnail Url: {}", thumbnailUrl);
+            String thumbnailUrl = null;
+            if (!Objects.equals(profile, "local"))
+                    thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
+
             return thumbnailUrl;
         } catch (Exception e) {
-            log.error("Error while fetching thumbnail");
+            log.error("Error while fetching thumbnail!", e);
         } finally {
             Files.delete(Path.of(thumbnailFileName + ".jpg"));
         }
