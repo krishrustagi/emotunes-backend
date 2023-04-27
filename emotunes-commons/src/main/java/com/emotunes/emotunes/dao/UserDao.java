@@ -15,10 +15,9 @@ public class UserDao {
 
     private final UserRepository userRepository;
 
-    public String saveAndGetModelId(UserDto userDto) {
+    public void save(UserDto userDto) {
         StoredUser user = UserMapper.toEntity(userDto);
         userRepository.save(user);
-        return user.getTrainingModelId();
     }
 
     public StoredUser findByEmailId(String emailId) {

@@ -1,5 +1,6 @@
 package com.emotunes.emotunes.service.impl;
 
+import com.emotunes.emotunes.client.MachineLearningClient;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
@@ -10,7 +11,6 @@ import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.helper.AdminHelper;
 import com.emotunes.emotunes.service.AdminService;
-import com.emotunes.emotunes.service.UserSongModelService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +25,7 @@ import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -54,11 +55,12 @@ public class AdminServiceImpl implements AdminService {
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
-    private final UserSongModelService userSongModelService;
+    private final MachineLearningClient machineLearningClient;
     private final AdminHelper adminHelper;
 
     @Override
-    public String addSongs(List<MultipartFile> songFiles) { // todo: use multithreading
+
+    public String addSongs(List<MultipartFile> songFiles) {
         if (songFiles.size() > BULK_SONGS_LIMIT) {
             throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
         } else {
@@ -78,10 +80,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
-            String trainingModelId = userDao.saveAndGetModelId(userDto);
-            // todo: add model of user
-            // todo: use kafka
-            availAllSongsToUser(userDto.getUserId(), trainingModelId);
+            String defaultModelWeightsUrl = "default"; // todo: update to default
+            userDto.setModelWeightsUrl(defaultModelWeightsUrl);
+            userDao.save(userDto);
+
+            availAllSongsToUser(userDto.getUserId(), defaultModelWeightsUrl);
             return "User added successfully!";
         }
 
@@ -171,7 +174,7 @@ public class AdminServiceImpl implements AdminService {
     private void availSongToAllUsers(String songId, String songUrl) {
         List<StoredUser> userList = userDao.findAll();
         for (StoredUser user : userList) {
-            predictEmotionAndPersistMapping(user.getId(), songId, songUrl, user.getTrainingModelId());
+            predictEmotionAndPersistMapping(user.getId(), songId, songUrl, user.getModelWeightsUrl());
         }
     }
 
@@ -201,23 +204,20 @@ public class AdminServiceImpl implements AdminService {
         return title;
     }
 
-    private void availAllSongsToUser(String userId, String trainingModelId) {
+    private void availAllSongsToUser(String userId, String modelWeightsUrl) {
         List<StoredSong> songList = songsDao.getAllSongs();
         songList.forEach(song -> {
-            predictEmotionAndPersistMapping(userId, song.getId(), song.getSongUrl(), trainingModelId);
+            predictEmotionAndPersistMapping(userId, song.getId(), song.getSongUrl(), modelWeightsUrl);
         });
     }
 
     private void predictEmotionAndPersistMapping(
-            String userId, String songId, String songUrl, String trainingModelId) {
-        Emotion songEmotion;
-        try {
-            songEmotion = userSongModelService.predictEmotion(trainingModelId, songUrl);
-        } catch (IOException e) {
-            log.error("Error while adding user song mapping for user {} and song {}", userId, songId, e);
-            songEmotion = Emotion.NEUTRAL;
-        }
+            String userId, String songId, String songUrl, String modelWeightsUrl) {
+        LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+        multiValueMap.add("song_url", songUrl);
+        multiValueMap.add("model_weights_url", modelWeightsUrl);
 
-        persistUserSongMapping(userId, songId, songEmotion);
+        String songEmotion = machineLearningClient.predictEmotion(multiValueMap);
+        persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
     }
 }

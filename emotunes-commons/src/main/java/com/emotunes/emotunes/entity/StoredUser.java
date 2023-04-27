@@ -27,5 +27,5 @@ public class StoredUser extends BaseEntity {
 
     private String name;
 
-    private String trainingModelId;
+    private String modelWeightsUrl;
 }
