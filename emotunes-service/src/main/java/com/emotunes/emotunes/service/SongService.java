@@ -9,7 +9,7 @@ public interface SongService {
 
     List<SongMetadata> getAllSongs(String userId, Long offset, int pageSize);
 
-    List<SongMetadata> getSongsByPrefix(String userId, String prefix);
+    List<SongMetadata> getSongsByPrefix(String userId, String prefix, Long offset, int pageSize);
 
     List<SongMetadata> getSongsByEmotion(String userId, Emotion emotion, Long offset, int pageSize);
 

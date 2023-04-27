@@ -34,8 +34,9 @@ public class SongsController {
     @GetMapping("/search")
     @ApiOperation("Search songs by Prefix")// todo: edit distance
     public ResponseEntity<List<SongMetadata>> getSongsByPrefix (
-            @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix){
-        return ResponseEntity.ok(songService.getSongsByPrefix(userId, prefix));
+            @RequestParam("user_id") String userId, @RequestParam("prefix") String prefix,
+            @RequestParam(value = "offset") Long offset){
+        return ResponseEntity.ok(songService.getSongsByPrefix(userId, prefix, offset, NUMBER_OF_SONGS_TO_BE_FETCHED));
     }
 
     @GetMapping("/emotion")

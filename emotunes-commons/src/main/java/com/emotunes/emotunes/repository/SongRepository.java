@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SongRepository extends JpaRepository<StoredSong, String> {
 
@@ -13,4 +15,11 @@ public interface SongRepository extends JpaRepository<StoredSong, String> {
             nativeQuery = true
     )
     String getLastFetchedSongId(Long offset);
+
+
+    @Query(value =
+            "select id from song where id>=?2 and title like CONCAT('%', ?1, '%') order by id offset ?2 limit ?3",
+            nativeQuery = true
+    )
+    List<String> findPaginatedSongsByPrefix(String prefix, Long offset, int pageSize);
 }
