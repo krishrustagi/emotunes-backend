@@ -18,4 +18,4 @@ spring:
     bootstrap-servers: localhost:9092
   azure:
     storage:
-      connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+      connection-string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=s+BEmpxTFEJZKwpBl5Bo+NdI9zqiwGiQ4fRNOiC7MGJpMLH1/GwfUfj55OqewrJjjBs39G9IFQ6U+AStbmm5cg==;EndpointSuffix=core.windows.net"
