@@ -12,7 +12,7 @@ public class UserMapper {
                 .id(userDto.getUserId())
                 .emailId(userDto.getEmailId())
                 .name(userDto.getName())
-                .modelWeightsUrl(userDto.getTrainingModelUrl())
+                .modelWeightsUrl(userDto.getModelWeightsUrl())
                 .build();
     }
 }

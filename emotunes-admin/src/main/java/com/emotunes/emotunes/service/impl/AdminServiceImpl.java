@@ -77,7 +77,7 @@ public class AdminServiceImpl implements AdminService {
     public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
             String defaultModelWeightsUrl = "default"; // todo: update to default
-            userDto.setTrainingModelUrl(defaultModelWeightsUrl);
+            userDto.setModelWeightsUrl(defaultModelWeightsUrl);
             userDao.save(userDto);
             // todo: add model of user
             // todo: use kafka
