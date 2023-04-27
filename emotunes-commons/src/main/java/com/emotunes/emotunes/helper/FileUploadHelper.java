@@ -1,4 +1,4 @@
-package com.emotunes.emotunes.util;
+package com.emotunes.emotunes.helper;
 
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
@@ -6,16 +6,17 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 
-@UtilityClass
-public class FileUploadUtil {
+@Component
+public class FileUploadHelper {
 
     @Value("${azure.storage.connection-string}")
     private String connectionString;
 
-    public static String uploadAndGetUrl(String containerName, InputStream inputStream, String fileName,
+    public String uploadAndGetUrl(String containerName, InputStream inputStream, String fileName,
                                          long fileSize) {
         BlobServiceClient blobServiceClient =
                 new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
