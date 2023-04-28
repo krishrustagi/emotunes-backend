@@ -1,6 +1,6 @@
 package com.emotunes.emotunes.helper;
 
-import com.emotunes.emotunes.util.FileUploadUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,16 +14,19 @@ import static com.emotunes.emotunes.constants.AzureStorageConstans.*;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class AdminHelper {
 
+    private final FileUploadHelper fileUploadHelper;
+
     public String uploadSongFileAndGetUrl(MultipartFile file) throws IOException {
-        return FileUploadUtil.uploadAndGetUrl(SONGS_CONTAINER, file.getInputStream(),
+        return fileUploadHelper.uploadAndGetUrl(SONGS_CONTAINER, file.getInputStream(),
                 file.getOriginalFilename(), file.getSize());
     }
 
     public String uploadThumbnailAndGetUrl(File file) {
         try (InputStream inputStream = new FileInputStream(file)) {
-            return FileUploadUtil.uploadAndGetUrl(THUMBNAILS_CONTAINER, inputStream,
+            return fileUploadHelper.uploadAndGetUrl(THUMBNAILS_CONTAINER, inputStream,
                     file.getName(),
                     file.length());
         } catch (Exception e) {

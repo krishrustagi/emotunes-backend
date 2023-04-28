@@ -16,6 +16,10 @@ spring:
       max-file-size: 500MB
   kafka:
     bootstrap-servers: localhost:9092
-  azure:
-    storage:
-      connection-string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=s+BEmpxTFEJZKwpBl5Bo+NdI9zqiwGiQ4fRNOiC7MGJpMLH1/GwfUfj55OqewrJjjBs39G9IFQ6U+AStbmm5cg==;EndpointSuffix=core.windows.net"
+#<<<<<<< HEAD
+#  azure:
+#    storage:
+#      connection-string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=s+BEmpxTFEJZKwpBl5Bo+NdI9zqiwGiQ4fRNOiC7MGJpMLH1/GwfUfj55OqewrJjjBs39G9IFQ6U+AStbmm5cg==;EndpointSuffix=core.windows.net"
+azure:
+  storage:
+    connection-string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=s+BEmpxTFEJZKwpBl5Bo+NdI9zqiwGiQ4fRNOiC7MGJpMLH1/GwfUfj55OqewrJjjBs39G9IFQ6U+AStbmm5cg==;EndpointSuffix=core.windows.net"
