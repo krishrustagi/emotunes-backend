@@ -22,4 +22,4 @@ spring:
 #      connection-string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=s+BEmpxTFEJZKwpBl5Bo+NdI9zqiwGiQ4fRNOiC7MGJpMLH1/GwfUfj55OqewrJjjBs39G9IFQ6U+AStbmm5cg==;EndpointSuffix=core.windows.net"
 azure:
   storage:
-    connection-string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=s+BEmpxTFEJZKwpBl5Bo+NdI9zqiwGiQ4fRNOiC7MGJpMLH1/GwfUfj55OqewrJjjBs39G9IFQ6U+AStbmm5cg==;EndpointSuffix=core.windows.net"
+    connection-string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=5+LpG0Rdrq3aLgMNtTYRXBQ/kl3YANr6css/8Cm/dNG1Lbx4i0LOREZvpxiwi12X1W9YnvZdJWfy+ASt8JU2Wg==;EndpointSuffix=core.windows.net"
