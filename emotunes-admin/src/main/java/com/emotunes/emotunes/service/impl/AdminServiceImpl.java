@@ -150,7 +150,7 @@ public class AdminServiceImpl implements AdminService {
     private String saveThumbnail(Tag tag, String title) throws IOException {
         Artwork artwork = tag.getFirstArtwork();
         String thumbnailFileName = IdGenerationUtil.getRandomId();
-        File thumbnail = new File(thumbnailFileName + ".jpg");
+        File thumbnail = File.createTempFile(thumbnailFileName, ".jpg");
         try {
             byte[] imageData = artwork.getBinaryData();
             ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
