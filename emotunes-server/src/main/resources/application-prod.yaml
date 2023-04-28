@@ -19,4 +19,4 @@ spring:
 azure:
   storage:
     connection:
-      string: "DefaultEndpointsProtocol=https;AccountName=emotunes;AccountKey=s+BEmpxTFEJZKwpBl5Bo+NdI9zqiwGiQ4fRNOiC7MGJpMLH1/GwfUfj55OqewrJjjBs39G9IFQ6U+AStbmm5cg==;EndpointSuffix=core.windows.net"
+      string: "BlobEndpoint=https://emotunes.blob.core.windows.net/;QueueEndpoint=https://emotunes.queue.core.windows.net/;FileEndpoint=https://emotunes.file.core.windows.net/;TableEndpoint=https://emotunes.table.core.windows.net/;SharedAccessSignature=sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-04-28T14:13:55Z&st=2023-04-28T06:13:55Z&spr=https,http&sig=UlcKWBqyPso7EX%2BLcRZZ0oiJoSv9U%2BLzzFP0AusSGMs%3D"
