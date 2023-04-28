@@ -30,11 +30,15 @@ public class AzureBlobConfig {
     @Value("${app.config.azure.storage-endpoint}")
     private String storageEndpoint;
 
+    @Value("${app.config.azure.sas-token}")
+    private String sasToken;
+
 
     @Bean
     public BlobServiceClientBuilder blobServiceClientBuilder() {
         return new BlobServiceClientBuilder()
                 .credential(getAzureClientCredentials())
+                .sasToken(sasToken)
                 .endpoint(storageEndpoint);
     }
 
