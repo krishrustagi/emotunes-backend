@@ -13,7 +13,7 @@ import java.io.InputStream;
 @Component
 public class FileUploadHelper {
 
-    @Value("${azure.storage.connection-string}")
+    @Value("${azure.storage.connection.string}")
     private String connectionString;
 
     public String uploadAndGetUrl(String containerName, InputStream inputStream, String fileName,
