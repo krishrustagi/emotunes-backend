@@ -165,7 +165,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             log.error("Error while fetching thumbnail!", e);
         } finally {
-            Files.delete(Path.of(thumbnailFileName + ".jpg"));
+//            Files.delete(Path.of(thumbnailFileName + ".jpg"));
         }
 
         return DEFAULT_THUMBNAIL_URL;
