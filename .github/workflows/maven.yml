@@ -18,6 +18,7 @@ jobs:
 
     steps:
       - uses: actions/delete-artifact@v2
+      - name: Delete artifacts
         with:
           name: *
 #      - uses: actions/checkout@v3
