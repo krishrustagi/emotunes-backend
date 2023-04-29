@@ -20,7 +20,4 @@ jobs:
       - uses: geekyeggo/delete-artifact@v2
         with:
           name: |
-            artifact-*
-            binary-file
-            output
             emotunes
