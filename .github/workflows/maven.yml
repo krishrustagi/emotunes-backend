@@ -1,18 +1,27 @@
-- name: Delete Old Artifacts
-  uses: actions/github-script@v6
-  id: artifact
-  with:
-    script: |
-      const res = await github.rest.actions.listArtifactsForRepo({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-      })
-      
-      res.data.artifacts
-        .forEach(({ id }) => {
-          github.rest.actions.deleteArtifact({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            artifact_id: id,
-          })
-        })
+name: 'nightly artifacts cleanup'
+on:
+  push:
+#    - cron: '0 1 * * *' # every night at 1 am UTC
+
+jobs:
+  delete-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Old Artifacts
+        uses: actions/github-script@v6
+        id: artifact
+        with:
+          script: |
+            const res = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+
+            res.data.artifacts
+              .forEach(({ id }) => {
+                github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: id,
+                })
+              })
