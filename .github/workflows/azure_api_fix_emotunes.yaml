@@ -29,6 +29,7 @@ jobs:
         with:
           name: emotunes
           path: '${{ github.workspace }}/emotunes-server/target/emotunes-server-0.0.1-SNAPSHOT-exec.jar'
+          retention-days: 2
 
   deploy:
     runs-on: ubuntu-latest
