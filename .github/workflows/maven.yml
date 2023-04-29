@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: kolpav/purge-artifacts-action@v1
         with:
-          token: $
+          token: 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
           expire-in: 0days # Set this to 0 to delete all artifacts
