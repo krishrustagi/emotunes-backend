@@ -4,16 +4,17 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 
 @Component
+@RequiredArgsConstructor
 public class FileUploadHelper {
 
-    @Value("${azure.storage.connection-string}")
+    @Value("${azure.storage.connection.string}")
     private String connectionString;
 
     public String uploadAndGetUrl(String containerName, InputStream inputStream, String fileName,
