@@ -29,5 +29,4 @@ app:
 azure:
   storage:
     connection:
-      string: "BlobEndpoint=https://emotunes.blob.core.windows.net/;
-            QueueEndpoint=https://emotunes.queue.core.windows.net/;FileEndpoint=https://emotunes.file.core.windows.net/;TableEndpoint=https://emotunes.table.core.windows.net/;SharedAccessSignature=sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-04-28T19:24:41Z&st=2023-04-28T11:24:41Z&spr=https&sig=ova0nTqZLvcVtqLlvq9PD%2ByC5Z27VFq8%2FPoX6E7qdr0%3D;comp=list&restype=container"
+      string: "BlobEndpoint=https://emotunes.blob.core.windows.net/;QueueEndpoint=https://emotunes.queue.core.windows.net/;FileEndpoint=https://emotunes.file.core.windows.net/;TableEndpoint=https://emotunes.table.core.windows.net/;SharedAccessSignature=sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-07-01T14:37:13Z&st=2023-04-30T06:37:13Z&spr=https&sig=EQnYuE29puI4I%2BG2vZ%2BszkmPuZy7HVGaT2CQiPyolLk%3D"
