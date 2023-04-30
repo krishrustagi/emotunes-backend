@@ -17,10 +17,10 @@ public class FileUploadHelper {
     @Value("${azure.storage.connection.string}")
     private String connectionString;
 
+    private final BlobServiceClient blobServiceClient;
+
     public String uploadAndGetUrl(String containerName, InputStream inputStream, String fileName,
                                          long fileSize) {
-        BlobServiceClient blobServiceClient =
-                new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
         BlobClient blobClient = containerClient.getBlobClient(fileName);
         blobClient.upload(inputStream, fileSize);
