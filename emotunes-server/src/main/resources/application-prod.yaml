@@ -25,7 +25,7 @@ app:
       tenant-id: 7374920a-88bf-4474-9dfe-c0a4b3c5316e
       storage-id: /subscriptions/6e56fcf6-8e88-4090-83de-8a0f4bdd2a05/resourceGroups/Raj/providers/Microsoft.Storage/storageAccounts/emotunes
       storage-endpoint: https://emotunes.blob.core.windows.net/"
-      sas-token: sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-04-28T19:24:41Z&st=2023-04-28T11:24:41Z&spr=https&sig=ova0nTqZLvcVtqLlvq9PD%2ByC5Z27VFq8%2FPoX6E7qdr0%3D
+      sas-token: sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-07-01T14:37:13Z&st=2023-04-30T06:37:13Z&spr=https&sig=EQnYuE29puI4I%2BG2vZ%2BszkmPuZy7HVGaT2CQiPyolLk%3D
 azure:
   storage:
     connection:
