@@ -150,7 +150,7 @@ public class AdminServiceImpl implements AdminService {
     private String saveThumbnail(Tag tag, String title) throws IOException {
         Artwork artwork = tag.getFirstArtwork();
         String thumbnailFileName = IdGenerationUtil.getRandomId();
-        File thumbnail = new File(thumbnailFileName + ".jpg");
+        File thumbnail = File.createTempFile(thumbnailFileName, ".jpg");
         try {
             byte[] imageData = artwork.getBinaryData();
             ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
@@ -164,8 +164,6 @@ public class AdminServiceImpl implements AdminService {
             return thumbnailUrl;
         } catch (Exception e) {
             log.error("Error while fetching thumbnail!", e);
-        } finally {
-            Files.delete(Path.of(thumbnailFileName + ".jpg"));
         }
 
         return DEFAULT_THUMBNAIL_URL;
