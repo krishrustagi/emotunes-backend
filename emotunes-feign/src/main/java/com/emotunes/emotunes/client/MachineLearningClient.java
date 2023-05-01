@@ -11,7 +11,4 @@ public interface MachineLearningClient {
 
     @PostMapping(value = "/v1/predict")
     String predictEmotion(@RequestBody LinkedMultiValueMap<String, String> formData);
-
-    @GetMapping(value = "/")
-    String getHello();
 }
