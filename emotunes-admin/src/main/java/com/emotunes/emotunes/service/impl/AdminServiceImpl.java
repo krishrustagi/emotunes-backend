@@ -33,13 +33,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
+import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_MODEL_WEIGHTS_URL;
 import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_THUMBNAIL_URL;
 
 @Service
@@ -80,7 +79,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
-            String defaultModelWeightsUrl = "default"; // todo: update to default
+            String defaultModelWeightsUrl = DEFAULT_MODEL_WEIGHTS_URL;
             userDto.setModelWeightsUrl(defaultModelWeightsUrl);
             userDao.save(userDto);
 

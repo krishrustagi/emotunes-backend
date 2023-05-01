@@ -11,4 +11,8 @@ public class AzureStorageConstans {
 
     public static final String DEFAULT_THUMBNAIL_URL = "https://emotunes.blob.core.windows" +
             ".net/thumbnails/default-thumbnail.jpg";
+
+    public static final String DEFAULT_MODEL_WEIGHTS_URL = "https://emotunes.blob.core.windows" +
+            ".net/thumbnails/default-thumbnail.jpg";
+
 }
