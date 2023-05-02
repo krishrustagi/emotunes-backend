@@ -20,3 +20,5 @@ spring:
       max-file-size: 500MB
   kafka:
     bootstrap-servers: localhost:9092
+  config:
+    import: classpath:keys/secrets.yml
