@@ -29,7 +29,7 @@ public class SchedulingServiceImpl implements SchedulingService {
         List<List<String>> userIdSongIdList = userSongEmotionPreferenceDao.getUserIdAndSongId(FETCH_COUNT_LIMIT);
 
         List<String> songUrlListOfUser = new ArrayList<>();
-        for (int i = 0; i<userIdSongIdList.size(); i++) {
+        for (int i = 0; i < userIdSongIdList.size(); i++) {
             String userId = userIdSongIdList.get(i).get(0);
             String songId = userIdSongIdList.get(i).get(1);
             // todo: use caffeine cache to get url of songs
@@ -37,7 +37,7 @@ public class SchedulingServiceImpl implements SchedulingService {
 
             songUrlListOfUser.add(songUrl);
 
-            if (i < userIdSongIdList.size()) {
+            if ((i + 1) < userIdSongIdList.size()) {
                 String nextUserId = userIdSongIdList.get(i + 1).get(0);
 
                 if (!Objects.equals(userId, nextUserId)) {
