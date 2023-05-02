@@ -27,4 +27,8 @@ public class UserDao {
     public List<StoredUser> findAll() {
         return userRepository.findAll();
     }
+
+    public String getModelWeightsUrl(String userId) {
+        return userRepository.getModelWeightsUrl(userId);
+    }
 }

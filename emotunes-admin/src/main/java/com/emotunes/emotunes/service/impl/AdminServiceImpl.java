@@ -35,7 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_MODEL_WEIGHTS_URL;
@@ -210,11 +212,11 @@ public class AdminServiceImpl implements AdminService {
 
     private void predictEmotionAndPersistMapping(
             String userId, String songId, String songUrl, String modelWeightsUrl) {
-        LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("song_url", songUrl);
-        multiValueMap.add("model_weights_url", modelWeightsUrl);
+        Map<String, String> map = new HashMap<>();
+        map.put("song_url", songUrl);
+        map.put("model_weights_url", modelWeightsUrl);
 
-        String songEmotion = machineLearningClient.predictEmotion(multiValueMap);
+        String songEmotion = machineLearningClient.predictEmotion(map);
         persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
     }
 }

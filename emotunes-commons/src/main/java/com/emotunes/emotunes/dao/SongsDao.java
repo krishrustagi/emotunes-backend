@@ -31,4 +31,8 @@ public class SongsDao {
     public List<String> getSongsByPrefix(String prefix, Long offset, int pageSize) {
         return songRepository.findPaginatedSongsByPrefix(prefix, pageSize, offset);
     }
+
+    public String getSongUrl(String songId) {
+        return songRepository.getSongUrl(songId);
+    }
 }

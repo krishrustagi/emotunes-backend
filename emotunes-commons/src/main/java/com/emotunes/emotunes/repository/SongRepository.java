@@ -21,4 +21,9 @@ public interface SongRepository extends JpaRepository<StoredSong, String> {
             nativeQuery = true
     )
     List<String> findPaginatedSongsByPrefix(String prefix, int pageSize, Long offset);
+
+    @Query(value =
+            "select song_url from song where song_id = ?1",
+            nativeQuery = true)
+    String getSongUrl(String songId);
 }
