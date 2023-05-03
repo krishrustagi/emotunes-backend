@@ -216,7 +216,11 @@ public class AdminServiceImpl implements AdminService {
         map.put("song_url", songUrl);
         map.put("model_weights_url", modelWeightsUrl);
 
-        String songEmotion = machineLearningClient.predictEmotion(map);
+        String songEmotion = "NEUTRAL";
+        if (!Objects.equals(env, "local")) {
+            songEmotion = machineLearningClient.predictEmotion(map);
+        }
+
         persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
     }
 }
