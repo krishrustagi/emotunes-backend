@@ -23,7 +23,7 @@ public interface SongRepository extends JpaRepository<StoredSong, String> {
     List<String> findPaginatedSongsByPrefix(String prefix, int pageSize, Long offset);
 
     @Query(value =
-            "select song_url from song where song_id = ?1",
+            "select song_url from song where song_id in ?1",
             nativeQuery = true)
-    String getSongUrl(String songId);
+    List<String> getSongUrls(List<String> songIdList);
 }

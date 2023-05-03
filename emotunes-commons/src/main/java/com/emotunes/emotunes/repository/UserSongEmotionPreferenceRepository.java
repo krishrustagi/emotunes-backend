@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Tuple;
 import java.util.List;
 
 @Repository
@@ -16,5 +17,5 @@ public interface UserSongEmotionPreferenceRepository extends JpaRepository<Store
                     + " having count(user_id) > ?1"
                     + " order by user_id",
             nativeQuery = true)
-    List<List<String>> findUserIdSongIdWithUserCountLimit(long limit);
+    List<Tuple> findUserIdSongIdWithUserCountLimit(long limit);
 }

@@ -32,7 +32,7 @@ public class SongsDao {
         return songRepository.findPaginatedSongsByPrefix(prefix, pageSize, offset);
     }
 
-    public String getSongUrl(String songId) {
-        return songRepository.getSongUrl(songId);
+    public List<String> getSongUrls(List<String> songIdList) {
+        return songRepository.getSongUrls(songIdList);
     }
 }

@@ -6,6 +6,7 @@ import com.emotunes.emotunes.mapper.UserMapper;
 import com.emotunes.emotunes.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,7 +29,12 @@ public class UserDao {
         return userRepository.findAll();
     }
 
-    public String getModelWeightsUrl(String userId) {
-        return userRepository.getModelWeightsUrl(userId);
+    public List<String> getModelWeightsUrls(List<String> userIdList) {
+        return userRepository.getModelWeightsUrl(userIdList);
+    }
+
+    @Transactional
+    public void updateModelWeightsUrlsByUserIds(List<String> userIdList, List<String> newModelWeightsUrlList) {
+        userRepository.updateModelWeightsUrlsByUserIds(userIdList, newModelWeightsUrlList);
     }
 }
