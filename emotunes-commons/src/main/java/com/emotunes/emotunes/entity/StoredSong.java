@@ -1,5 +1,6 @@
 package com.emotunes.emotunes.entity;
 
+import com.emotunes.emotunes.enums.Emotion;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -33,4 +34,6 @@ public class StoredSong extends BaseEntity {
     private String songUrl;
 
     private String thumbnailUrl;
+
+    private Emotion defaultEmotion;
 }
