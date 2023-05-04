@@ -13,9 +13,8 @@ public interface UserSongEmotionPreferenceRepository extends JpaRepository<Store
 
     @Query(value =
             "select user_id, song_id from user_song_emotion_preference"
-                    + " group by user_id"
-                    + " having count(user_id) > ?1"
-                    + " order by user_id",
+                    + " group by user_id, song_id"
+                    + " having count(user_id) >= ?1",
             nativeQuery = true)
     List<Tuple> findUserIdSongIdWithUserCountLimit(long limit);
 }

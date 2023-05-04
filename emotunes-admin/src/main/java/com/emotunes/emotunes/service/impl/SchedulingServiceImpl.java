@@ -1,10 +1,8 @@
 package com.emotunes.emotunes.service.impl;
 
-import com.emotunes.emotunes.client.MachineLearningClient;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongEmotionPreferenceDao;
-import com.emotunes.emotunes.helper.FileUploadHelper;
 import com.emotunes.emotunes.helper.SchedulingHelper;
 import com.emotunes.emotunes.service.SchedulingService;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +11,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Tuple;
-import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.emotunes.emotunes.constants.AzureStorageConstans.MODEL_WEIGHTS_CONTAINER;
 
 
 @Service
@@ -33,7 +30,6 @@ public class SchedulingServiceImpl implements SchedulingService {
     private final UserSongEmotionPreferenceDao userSongEmotionPreferenceDao;
     private final UserDao userDao;
     private final SongsDao songsDao;
-    private final MachineLearningClient machineLearningClient;
     private final SchedulingHelper schedulingHelper;
 
     @Scheduled(cron = "0 0 0 * * *")
@@ -42,49 +38,55 @@ public class SchedulingServiceImpl implements SchedulingService {
         List<Tuple> userIdSongIdList = userSongEmotionPreferenceDao.getUserIdAndSongId(FETCH_COUNT_LIMIT);
 
         List<String> songIdList =
-                userIdSongIdList.stream().map(tuple -> tuple.get(1).toString()).collect(Collectors.toList());
+                userIdSongIdList.stream()
+                        .map(tuple -> tuple.get(1).toString())
+                        .distinct()
+                        .collect(Collectors.toList());
 
         List<String> userIdList =
-                userIdSongIdList.stream().map(tuple -> tuple.get(0).toString()).collect(Collectors.toList());
+                userIdSongIdList.stream()
+                        .map(tuple -> tuple.get(0).toString())
+                        .distinct()
+                        .collect(Collectors.toList());
 
         List<String> songUrlList = songsDao.getSongUrls(songIdList);
+        Map<String, String> songIdSongUrlMap = mapStringLists(songIdList, songUrlList);
 
         List<String> modelWeightsUrlList = userDao.getModelWeightsUrls(userIdList);
+        Map<String, String> userIdModelWeightsUrlMap = mapStringLists(userIdList, modelWeightsUrlList);
 
-        for (String x : songUrlList) {
-            log.info("x: {}", x);
+        MultiValueMap<List<String>, String> modelWeightsUrlSongUrlMap =
+                createModelWeightsUrlSongUrlMap(userIdSongIdList, songIdSongUrlMap, userIdModelWeightsUrlMap);
+
+        schedulingHelper.reTrainAndUpdateNewWeights(modelWeightsUrlSongUrlMap);
+    }
+
+    private Map<String, String> mapStringLists(List<String> firstList, List<String> secondList) {
+
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0; i < firstList.size(); i++) {
+            map.put(firstList.get(i), secondList.get(i));
         }
 
-        for (String x : modelWeightsUrlList) {
-            log.info("y: {}", x);
-        }
+        return map;
+    }
+
+    private MultiValueMap<List<String>, String> createModelWeightsUrlSongUrlMap(
+            List<Tuple> userIdSongIdList, Map<String, String> songIdSongUrlMap,
+            Map<String, String> userIdModelWeightsUrlMap) {
 
         MultiValueMap<List<String>, String> modelWeightsUrlSongUrlMap = new LinkedMultiValueMap<>();
-        for (int i = 0; i < userIdList.size(); i++) {
-            modelWeightsUrlSongUrlMap.add(List.of(userIdList.get(i), modelWeightsUrlList.get(i)), songUrlList.get(i));
-        }
 
-        List<String> uniqueUserIdList = new ArrayList<>();
-        List<String> newModelWeightsUrlList = new ArrayList<>();
+        userIdSongIdList.forEach(tuple -> {
+            String userId = tuple.get(0).toString();
+            String songId = tuple.get(1).toString();
 
-        modelWeightsUrlSongUrlMap.forEach((userIdModelWeights, songUrls) -> {
-            String userId = userIdModelWeights.get(0);
-            String modelWeightsUrl = userIdModelWeights.get(1);
+            String modelUrl = userIdModelWeightsUrlMap.get(userId);
+            String songUrl = songIdSongUrlMap.get(songId);
 
-            MultipartFile newModelWeights = machineLearningClient.reTraining(
-                    Map.of(modelWeightsUrl, songUrls));
-
-            try {
-                String newModelWeightsUrl = schedulingHelper.uploadModelWeightsFileAndGetUrl(newModelWeights);
-                uniqueUserIdList.add(userId);
-                newModelWeightsUrlList.add(newModelWeightsUrl);
-
-                userDao.updateModelWeightsUrlsByUserIds(uniqueUserIdList, newModelWeightsUrlList);
-            } catch (IOException e) {
-                log.error("Error while saving new weights! ", e);
-            }
+            modelWeightsUrlSongUrlMap.add(Arrays.asList(userId, modelUrl), songUrl);
         });
 
-        userDao.updateModelWeightsUrlsByUserIds(userIdList, newModelWeightsUrlList);
+        return modelWeightsUrlSongUrlMap;
     }
 }

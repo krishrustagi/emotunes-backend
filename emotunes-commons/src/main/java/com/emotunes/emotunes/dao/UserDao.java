@@ -34,7 +34,7 @@ public class UserDao {
     }
 
     @Transactional
-    public void updateModelWeightsUrlsByUserIds(List<String> userIdList, List<String> newModelWeightsUrlList) {
-        userRepository.updateModelWeightsUrlsByUserIds(userIdList, newModelWeightsUrlList);
+    public void updateModelWeightsUrlByUserId(String userId, String newModelWeightsUrl) {
+        userRepository.updateModelWeightsUrlByUserId(userId, newModelWeightsUrl);
     }
 }

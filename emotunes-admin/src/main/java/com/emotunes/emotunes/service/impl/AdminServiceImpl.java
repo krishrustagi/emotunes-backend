@@ -25,7 +25,6 @@ import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -60,7 +59,6 @@ public class AdminServiceImpl implements AdminService {
     private final AdminHelper adminHelper;
 
     @Override
-
     public String addSongs(List<MultipartFile> songFiles) {
         if (songFiles.size() > BULK_SONGS_LIMIT) {
             throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
@@ -160,7 +158,7 @@ public class AdminServiceImpl implements AdminService {
 
             String thumbnailUrl = null;
             if (!Objects.equals(env, "local"))
-                    thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
+                thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
 
             return thumbnailUrl;
         } catch (Exception e) {
