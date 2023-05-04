@@ -24,12 +24,12 @@ public class SchedulingHelper {
     private final MachineLearningClient machineLearningClient;
     private final UserDao userDao;
 
-    public void reTrainAndUpdateNewWeights(MultiValueMap<List<String>, String> modelWeightsUrlSongUrlMap) {
-        modelWeightsUrlSongUrlMap.forEach((userIdModelWeights, songUrls) -> {
+    public void reTrainAndUpdateNewWeights(MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap) {
+        modelWeightsUrlSongUrlMap.forEach((userIdModelWeights, songUrlEmotion) -> {
             String userId = userIdModelWeights.get(0);
             String modelWeightsUrl = userIdModelWeights.get(1);
 
-            MultipartFile newModelWeights = sendForRetraining(modelWeightsUrl, songUrls);
+            MultipartFile newModelWeights = sendForRetraining(modelWeightsUrl, songUrlEmotion.get(0), songUrlEmotion.get(1));
 
             String newModelWeightsUrl;
             try {
@@ -41,10 +41,11 @@ public class SchedulingHelper {
         });
     }
 
-    private MultipartFile sendForRetraining(String modelWeightsUrl, List<String> songUrls) {
+    private MultipartFile sendForRetraining(String modelWeightsUrl, List<String> songUrls, List<String> emotions) {
         Map<String, Object> map = new HashMap<>();
         map.put("model_weights_url", modelWeightsUrl);
         map.put("song_urls", songUrls);
+        map.put("emotions", emotions);
 
         return machineLearningClient.reTraining(map);
     }

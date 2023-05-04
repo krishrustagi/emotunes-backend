@@ -35,7 +35,7 @@ public class SchedulingServiceImpl implements SchedulingService {
     @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void scheduleReTraining() {
-        List<Tuple> userIdSongIdList = userSongEmotionPreferenceDao.getUserIdAndSongId(FETCH_COUNT_LIMIT);
+        List<Tuple> userIdSongIdList = userSongEmotionPreferenceDao.getUserIdSongIdEmotion(FETCH_COUNT_LIMIT);
 
         List<String> songIdList =
                 userIdSongIdList.stream()
@@ -55,7 +55,7 @@ public class SchedulingServiceImpl implements SchedulingService {
         List<String> modelWeightsUrlList = userDao.getModelWeightsUrls(userIdList);
         Map<String, String> userIdModelWeightsUrlMap = mapStringLists(userIdList, modelWeightsUrlList);
 
-        MultiValueMap<List<String>, String> modelWeightsUrlSongUrlMap =
+        MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap =
                 createModelWeightsUrlSongUrlMap(userIdSongIdList, songIdSongUrlMap, userIdModelWeightsUrlMap);
 
         schedulingHelper.reTrainAndUpdateNewWeights(modelWeightsUrlSongUrlMap);
@@ -71,20 +71,21 @@ public class SchedulingServiceImpl implements SchedulingService {
         return map;
     }
 
-    private MultiValueMap<List<String>, String> createModelWeightsUrlSongUrlMap(
+    private MultiValueMap<List<String>, List<String>> createModelWeightsUrlSongUrlMap(
             List<Tuple> userIdSongIdList, Map<String, String> songIdSongUrlMap,
             Map<String, String> userIdModelWeightsUrlMap) {
 
-        MultiValueMap<List<String>, String> modelWeightsUrlSongUrlMap = new LinkedMultiValueMap<>();
+        MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap = new LinkedMultiValueMap<>();
 
         userIdSongIdList.forEach(tuple -> {
             String userId = tuple.get(0).toString();
             String songId = tuple.get(1).toString();
+            String emotion = tuple.get(2).toString();
 
             String modelUrl = userIdModelWeightsUrlMap.get(userId);
             String songUrl = songIdSongUrlMap.get(songId);
 
-            modelWeightsUrlSongUrlMap.add(Arrays.asList(userId, modelUrl), songUrl);
+            modelWeightsUrlSongUrlMap.add(Arrays.asList(userId, modelUrl), Arrays.asList(songUrl, emotion));
         });
 
         return modelWeightsUrlSongUrlMap;

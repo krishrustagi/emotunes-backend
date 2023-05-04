@@ -20,7 +20,7 @@ public class UserSongEmotionPreferenceDao {
                 UserSongEmotionPreferenceMapper.toEntity(userId, songId, correctEmotion));
     }
 
-    public List<Tuple> getUserIdAndSongId(long limit) {
+    public List<Tuple> getUserIdSongIdEmotion(long limit) {
         return userSongEmotionPreferenceRepository.findUserIdSongIdWithUserCountLimit(limit);
     }
 }
