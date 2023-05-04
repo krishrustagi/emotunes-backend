@@ -21,4 +21,4 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
   config:
-    import: classpath:keys/secrets.yml
+    import: optional:classpath:keys/secrets.yml
