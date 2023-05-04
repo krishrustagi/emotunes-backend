@@ -3,10 +3,7 @@ package com.emotunes.emotunes.entity;
 import com.emotunes.emotunes.enums.Emotion;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalTime;
 
 @Data
@@ -35,5 +32,6 @@ public class StoredSong extends BaseEntity {
 
     private String thumbnailUrl;
 
+    @Enumerated(EnumType.STRING)
     private Emotion defaultEmotion;
 }
