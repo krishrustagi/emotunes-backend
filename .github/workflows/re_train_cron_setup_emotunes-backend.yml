@@ -22,13 +22,13 @@ jobs:
           java-version: '11'
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean package
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          name: emotunes
+          path: '${{ github.workspace }}/emotunes-server/target/emotunes-server-0.0.1-SNAPSHOT-exec.jar'
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: java-app
+          name: emotunes
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'emotunes-backend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BCA20CD2F8334FBDB61AE12E1E33668F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7D5CA72F2D0D4999B1107870EAEA5900 }}
           package: '*.jar'
