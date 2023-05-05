@@ -53,8 +53,11 @@ public class SchedulingServiceImpl implements SchedulingService {
 
         MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap =
                 createModelWeightsUrlSongUrlMap(userIdSongIdList, songIdSongUrlMap, userIdModelWeightsUrlMap);
-
-        schedulingHelper.reTrainAndUpdateNewWeights(modelWeightsUrlSongUrlMap);
+        try {
+            schedulingHelper.reTrainAndUpdateNewWeights(modelWeightsUrlSongUrlMap);
+        } catch (Exception e) {
+            log.error("Error while re training and updating new weights!", e);
+        }
     }
 
     private Map<String, String> createMapFromTupleList(List<Tuple> tupleList) {
