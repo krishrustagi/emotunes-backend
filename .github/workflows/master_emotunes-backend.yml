@@ -6,7 +6,7 @@ name: Build and deploy JAR app to Azure Web App - emotunes-backend
 on:
   push:
     branches:
-      - master
+      - re_train_cron_setup
   workflow_dispatch:
 
 jobs:
@@ -22,13 +22,13 @@ jobs:
           java-version: '11'
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean package
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          name: emotunes
+          path: '${{ github.workspace }}/emotunes-server/target/emotunes-server-0.0.1-SNAPSHOT-exec.jar'
 
   deploy:
     runs-on: ubuntu-latest
@@ -36,12 +36,12 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: java-app
+          name: emotunes
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
