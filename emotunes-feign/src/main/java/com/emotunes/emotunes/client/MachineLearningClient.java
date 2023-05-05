@@ -8,12 +8,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-@FeignClient(name = "machineLearningClient", url = "https://emtounes.onrender.com/")
+@FeignClient(name = "machineLearningClient", url = "https://emtounes.onrender.com")
 public interface MachineLearningClient {
 
     @PostMapping(value = "/v1/predict")
     String predictEmotion(@RequestBody Map<String, String> formData);
 
-    @PostMapping(value = "v1/re-train")
+    @PostMapping(value = "/v1/re-train")
     ResponseEntity<byte[]> reTraining(@RequestBody Map<String, Object> formData);
 }
