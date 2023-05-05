@@ -1,6 +1,7 @@
 package com.emotunes.emotunes.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,5 +15,5 @@ public interface MachineLearningClient {
     String predictEmotion(@RequestBody Map<String, String> formData);
 
     @PostMapping(value = "v1/re-train")
-    MultipartFile reTraining(@RequestBody Map<String, Object> formData);
+    ResponseEntity<byte[]> reTraining(@RequestBody Map<String, Object> formData);
 }
