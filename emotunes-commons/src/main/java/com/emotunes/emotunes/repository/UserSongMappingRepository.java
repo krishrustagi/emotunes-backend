@@ -28,7 +28,8 @@ public interface UserSongMappingRepository
                     + " and emotion = ?3 order by song_id limit ?4",
             nativeQuery = true
     )
-    List<StoredUserSongMapping> findPaginatedSongsByEmotionForUser(String userId, String songId, String emotion, int pageSize);
+    List<StoredUserSongMapping> findPaginatedSongsByEmotionForUser(
+            String userId, String songId, String emotion, int pageSize);
 
     @Query(value =
             "select * from user_song_emotion_mapping"

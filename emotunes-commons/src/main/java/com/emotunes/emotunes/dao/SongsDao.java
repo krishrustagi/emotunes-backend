@@ -2,12 +2,12 @@ package com.emotunes.emotunes.dao;
 
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.entity.StoredSong;
-import com.emotunes.emotunes.entity.StoredUserSongMapping;
 import com.emotunes.emotunes.mapper.SongMapper;
 import com.emotunes.emotunes.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.Tuple;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,5 +30,9 @@ public class SongsDao {
 
     public List<String> getSongsByPrefix(String prefix, Long offset, int pageSize) {
         return songRepository.findPaginatedSongsByPrefix(prefix, pageSize, offset);
+    }
+
+    public List<Tuple> getSongUrls(List<String> songIdList) {
+        return songRepository.getSongUrls(songIdList);
     }
 }

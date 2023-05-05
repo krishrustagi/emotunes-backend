@@ -6,6 +6,9 @@ import com.emotunes.emotunes.repository.UserSongEmotionPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.Tuple;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Component
 public class UserSongEmotionPreferenceDao {
@@ -17,4 +20,7 @@ public class UserSongEmotionPreferenceDao {
                 UserSongEmotionPreferenceMapper.toEntity(userId, songId, correctEmotion));
     }
 
+    public List<Tuple> getUserIdSongIdEmotion(long limit) {
+        return userSongEmotionPreferenceRepository.findUserIdSongIdWithUserCountLimit(limit);
+    }
 }

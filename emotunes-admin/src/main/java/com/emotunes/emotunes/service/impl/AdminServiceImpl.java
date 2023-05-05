@@ -25,7 +25,6 @@ import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -35,7 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_MODEL_WEIGHTS_URL;
@@ -58,7 +59,6 @@ public class AdminServiceImpl implements AdminService {
     private final AdminHelper adminHelper;
 
     @Override
-
     public String addSongs(List<MultipartFile> songFiles) {
         if (songFiles.size() > BULK_SONGS_LIMIT) {
             throw new IllegalArgumentException("Maximum 50 files at a time allowed!");
@@ -160,7 +160,7 @@ public class AdminServiceImpl implements AdminService {
 
             String thumbnailUrl = null;
             if (!Objects.equals(env, "local"))
-                    thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
+                thumbnailUrl = adminHelper.uploadThumbnailAndGetUrl(thumbnail);
 
             return thumbnailUrl;
         } catch (Exception e) {
@@ -212,15 +212,14 @@ public class AdminServiceImpl implements AdminService {
 
     private void predictEmotionAndPersistMapping(
             String userId, String songId, String songUrl, String modelWeightsUrl) {
-
         String songEmotion = predictSongEmotion(songUrl, modelWeightsUrl);
         persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
     }
 
     private String predictSongEmotion(String songUrl, String modelWeightsUrl) {
-        LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("song_url", songUrl);
-        multiValueMap.add("model_weights_url", modelWeightsUrl);
+        Map<String, String> multiValueMap = new HashMap<>();
+        multiValueMap.put("song_url", songUrl);
+        multiValueMap.put("model_weights_url", modelWeightsUrl);
 
         return machineLearningClient.predictEmotion(multiValueMap);
     }

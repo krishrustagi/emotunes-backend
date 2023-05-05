@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Collections.shuffle;
-
 @Component
 @RequiredArgsConstructor
 public class UserSongMappingDao {
@@ -36,7 +34,8 @@ public class UserSongMappingDao {
     }
 
 
-    public List<SongMetadata> getPaginatedSongsByEmotionForUser(String userId, String songId, Emotion emotion, int pageSize) {
+    public List<SongMetadata> getPaginatedSongsByEmotionForUser(
+            String userId, String songId, Emotion emotion, int pageSize) {
         List<StoredUserSongMapping> userSongMappingList =
                 userSongMappingRepository.findPaginatedSongsByEmotionForUser(userId, songId, emotion.name(), pageSize);
 
@@ -49,6 +48,7 @@ public class UserSongMappingDao {
 
         return getAndShuffleSongMetaDataList(userSongMappingList);
     }
+
     public List<SongMetadata> getSongsForUserAndSongIds(String userId, List<String> songIdList) {
         List<StoredUserSongMapping> userSongMappingList =
                 userSongMappingRepository.getSongsDetailsForUserAndSongIds(userId, songIdList);
