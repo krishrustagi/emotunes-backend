@@ -42,8 +42,7 @@ public class SchedulingHelper {
         });
     }
 
-    private File sendForRetraining(String modelWeightsUrl, List<String> songUrls, List<String> emotions)
-            throws IOException {
+    private File sendForRetraining(String modelWeightsUrl, List<String> songUrls, List<String> emotions) {
         Map<String, Object> map = new HashMap<>();
         map.put("model_weights_url", modelWeightsUrl);
         map.put("song_urls", songUrls);
@@ -58,7 +57,7 @@ public class SchedulingHelper {
             return tempFile;
         } catch (IOException e) {
             log.info("Error while getting fetching file response!", e);
-            throw new IOException(e);
+            throw new RuntimeException(e);
         }
     }
 
