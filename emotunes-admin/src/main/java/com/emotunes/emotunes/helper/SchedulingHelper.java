@@ -24,7 +24,6 @@ public class SchedulingHelper {
     private final FileUploadHelper fileUploadHelper;
     private final MachineLearningClient machineLearningClient;
     private final UserDao userDao;
-    private final AdminHelper adminHelper;
 
     public void reTrainAndUpdateNewWeights(MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap) {
         modelWeightsUrlSongUrlMap.forEach((userIdModelWeights, songUrlEmotion) -> {

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Tuple;
 import java.util.List;
 
 @Repository
@@ -23,7 +24,7 @@ public interface SongRepository extends JpaRepository<StoredSong, String> {
     List<String> findPaginatedSongsByPrefix(String prefix, int pageSize, Long offset);
 
     @Query(value =
-            "select song_url from song where id in ?1",
+            "select (id, song_url) from song where id in ?1",
             nativeQuery = true)
-    List<String> getSongUrls(List<String> songIdList);
+    List<Tuple> getSongUrls(List<String> songIdList);
 }

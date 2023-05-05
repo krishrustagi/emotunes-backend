@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Tuple;
 import java.util.List;
 
 @Component
@@ -29,7 +30,7 @@ public class UserDao {
         return userRepository.findAll();
     }
 
-    public List<String> getModelWeightsUrls(List<String> userIdList) {
+    public List<Tuple> getModelWeightsUrls(List<String> userIdList) {
         return userRepository.getModelWeightsUrl(userIdList);
     }
 

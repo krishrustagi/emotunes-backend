@@ -7,6 +7,7 @@ import com.emotunes.emotunes.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.Tuple;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class SongsDao {
         return songRepository.findPaginatedSongsByPrefix(prefix, pageSize, offset);
     }
 
-    public List<String> getSongUrls(List<String> songIdList) {
+    public List<Tuple> getSongUrls(List<String> songIdList) {
         return songRepository.getSongUrls(songIdList);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Tuple;
 import java.util.List;
 
 @Repository
@@ -14,10 +15,10 @@ public interface UserRepository extends JpaRepository<StoredUser, String> {
     StoredUser findByEmailId(String emailId);
 
     @Query(value =
-            "select model_weights_url from user_details"
+            "select id, model_weights_url from user_details"
                     + " where id in ?1",
             nativeQuery = true)
-    List<String> getModelWeightsUrl(List<String> userId);
+    List<Tuple> getModelWeightsUrl(List<String> userId);
 
     @Modifying
     @Query(value =

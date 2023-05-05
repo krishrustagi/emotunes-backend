@@ -14,7 +14,6 @@ import org.springframework.util.MultiValueMap;
 
 import javax.persistence.Tuple;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,11 +48,8 @@ public class SchedulingServiceImpl implements SchedulingService {
                         .distinct()
                         .collect(Collectors.toList());
 
-        List<String> songUrlList = songsDao.getSongUrls(songIdList);
-        Map<String, String> songIdSongUrlMap = mapStringLists(songIdList, songUrlList);
-
-        List<String> modelWeightsUrlList = userDao.getModelWeightsUrls(userIdList);
-        Map<String, String> userIdModelWeightsUrlMap = mapStringLists(userIdList, modelWeightsUrlList);
+        Map<String, String> songIdSongUrlMap = createMapFromTupleList(songsDao.getSongUrls(songIdList));
+        Map<String, String> userIdModelWeightsUrlMap = createMapFromTupleList(userDao.getModelWeightsUrls(userIdList));
 
         MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap =
                 createModelWeightsUrlSongUrlMap(userIdSongIdList, songIdSongUrlMap, userIdModelWeightsUrlMap);
@@ -61,14 +57,11 @@ public class SchedulingServiceImpl implements SchedulingService {
         schedulingHelper.reTrainAndUpdateNewWeights(modelWeightsUrlSongUrlMap);
     }
 
-    private Map<String, String> mapStringLists(List<String> firstList, List<String> secondList) {
-
-        Map<String, String> map = new HashMap<>();
-        for (int i = 0; i < firstList.size(); i++) {
-            map.put(firstList.get(i), secondList.get(i));
-        }
-
-        return map;
+    private Map<String, String> createMapFromTupleList(List<Tuple> tupleList) {
+        return tupleList.stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(0).toString(),
+                        tuple -> tuple.get(1).toString()));
     }
 
     private MultiValueMap<List<String>, List<String>> createModelWeightsUrlSongUrlMap(
@@ -77,11 +70,13 @@ public class SchedulingServiceImpl implements SchedulingService {
 
         MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap = new LinkedMultiValueMap<>();
 
+        log.info("Entries to be Re-trained:");
         userIdSongIdList.forEach(tuple -> {
             String userId = tuple.get(0).toString();
             String songId = tuple.get(1).toString();
             String emotion = tuple.get(2).toString();
 
+            log.info("UserId: {}; Song id: {}; Emotion: {}", userId, songId, emotion);
             String modelUrl = userIdModelWeightsUrlMap.get(userId);
             String songUrl = songIdSongUrlMap.get(songId);
 
