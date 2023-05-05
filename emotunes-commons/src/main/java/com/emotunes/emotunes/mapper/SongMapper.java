@@ -32,6 +32,7 @@ public class SongMapper {
                 .artist(songMetadata.getArtist())
                 .thumbnailUrl(songMetadata.getThumbnailUrl())
                 .songUrl(songMetadata.getSongUrl())
+                .defaultEmotion(songMetadata.getEmotion())
                 .build();
     }
 }
