@@ -79,11 +79,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public String registerUser(UserDto userDto) {
         if (Objects.isNull(userDao.findByEmailId(userDto.getEmailId()))) {
-            String defaultModelWeightsUrl = DEFAULT_MODEL_WEIGHTS_URL;
-            userDto.setModelWeightsUrl(defaultModelWeightsUrl);
+            userDto.setModelWeightsUrl(DEFAULT_MODEL_WEIGHTS_URL);
             userDao.save(userDto);
 
-            availAllSongsToUser(userDto.getUserId(), defaultModelWeightsUrl);
+            availAllSongsToUser(userDto.getUserId());
             return "User added successfully!";
         }
 
@@ -113,6 +112,8 @@ public class AdminServiceImpl implements AdminService {
             long duration = getDuration(audioFile);
 
             String thumbnailUrl = saveThumbnail(tag, title);
+
+            Emotion defaultEmotion = Emotion.valueOf(predictSongEmotion(songUrl, DEFAULT_MODEL_WEIGHTS_URL));
             SongMetadata songMetadata =
                     SongMetadata.builder()
                             .title(title)
@@ -122,6 +123,7 @@ public class AdminServiceImpl implements AdminService {
                             .artist(artist)
                             .thumbnailUrl(thumbnailUrl)
                             .songUrl(songUrl)
+                            .emotion(defaultEmotion)
                             .build();
 
             String songId = persistSong(songMetadata);
@@ -201,24 +203,24 @@ public class AdminServiceImpl implements AdminService {
         return title;
     }
 
-    private void availAllSongsToUser(String userId, String modelWeightsUrl) {
+    private void availAllSongsToUser(String userId) {
         List<StoredSong> songList = songsDao.getAllSongs();
         songList.forEach(song -> {
-            predictEmotionAndPersistMapping(userId, song.getId(), song.getSongUrl(), modelWeightsUrl);
+            userSongMappingDao.addMapping(userId, song.getId(), song.getDefaultEmotion());
         });
     }
 
     private void predictEmotionAndPersistMapping(
             String userId, String songId, String songUrl, String modelWeightsUrl) {
-        Map<String, String> map = new HashMap<>();
-        map.put("song_url", songUrl);
-        map.put("model_weights_url", modelWeightsUrl);
-
-        String songEmotion = "NEUTRAL";
-        if (!Objects.equals(env, "local")) {
-            songEmotion = machineLearningClient.predictEmotion(map);
-        }
-
+        String songEmotion = predictSongEmotion(songUrl, modelWeightsUrl);
         persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
+    }
+
+    private String predictSongEmotion(String songUrl, String modelWeightsUrl) {
+        Map<String, String> multiValueMap = new HashMap<>();
+        multiValueMap.put("song_url", songUrl);
+        multiValueMap.put("model_weights_url", modelWeightsUrl);
+
+        return machineLearningClient.predictEmotion(multiValueMap);
     }
 }
