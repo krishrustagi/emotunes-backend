@@ -3,11 +3,14 @@ package com.emotunes.emotunes.service.impl;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongEmotionPreferenceDao;
+import com.emotunes.emotunes.dao.UserSongMappingDao;
+import com.emotunes.emotunes.entity.StoredSong;
+import com.emotunes.emotunes.enums.Emotion;
+import com.emotunes.emotunes.helper.MachineLearningHelper;
 import com.emotunes.emotunes.helper.SchedulingHelper;
 import com.emotunes.emotunes.service.SchedulingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -30,8 +33,9 @@ public class SchedulingServiceImpl implements SchedulingService {
     private final UserDao userDao;
     private final SongsDao songsDao;
     private final SchedulingHelper schedulingHelper;
+    private final MachineLearningHelper machineLearningHelper;
+    private final UserSongMappingDao userSongMappingDao;
 
-    @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void scheduleReTraining() {
         List<Tuple> userIdSongIdList = userSongEmotionPreferenceDao.getUserIdSongIdEmotion(FETCH_COUNT_LIMIT);
@@ -51,13 +55,28 @@ public class SchedulingServiceImpl implements SchedulingService {
         Map<String, String> songIdSongUrlMap = createMapFromTupleList(songsDao.getSongUrls(songIdList));
         Map<String, String> userIdModelWeightsUrlMap = createMapFromTupleList(userDao.getModelWeightsUrls(userIdList));
 
-        MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap =
-                createModelWeightsUrlSongUrlMap(userIdSongIdList, songIdSongUrlMap, userIdModelWeightsUrlMap);
+        MultiValueMap<String, List<String>> userIdSongUrlEmotionMap =
+                createUserIdSongUrlEmotionMap(userIdSongIdList, songIdSongUrlMap);
+
         try {
-            schedulingHelper.reTrainAndUpdateNewWeights(modelWeightsUrlSongUrlMap);
+            schedulingHelper.reTrainAndUpdateNewWeights(userIdSongUrlEmotionMap, userIdModelWeightsUrlMap);
         } catch (Exception e) {
             log.error("Error while re training and updating new weights!", e);
         }
+
+        // predict song for all users whose models have changed
+        List<StoredSong> songList = songsDao.getAllSongs();
+        userIdList.forEach(userId -> {
+            songList.forEach(song -> {
+                    String songEmotion = machineLearningHelper.predictSongEmotion(song.getSongUrl(),
+                            userIdModelWeightsUrlMap.get(userId));
+                    updateUserSongMapping(userId, song.getId(), Emotion.valueOf(songEmotion));
+            });
+        });
+    }
+
+    private void updateUserSongMapping(String userId, String songId, Emotion emotion) {
+        userSongMappingDao.updateSongEmotionForUser(userId, songId, emotion);
     }
 
     private Map<String, String> createMapFromTupleList(List<Tuple> tupleList) {
@@ -67,11 +86,10 @@ public class SchedulingServiceImpl implements SchedulingService {
                         tuple -> tuple.get(1).toString()));
     }
 
-    private MultiValueMap<List<String>, List<String>> createModelWeightsUrlSongUrlMap(
-            List<Tuple> userIdSongIdList, Map<String, String> songIdSongUrlMap,
-            Map<String, String> userIdModelWeightsUrlMap) {
+    private MultiValueMap<String, List<String>> createUserIdSongUrlEmotionMap(
+            List<Tuple> userIdSongIdList, Map<String, String> songIdSongUrlMap) {
 
-        MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap = new LinkedMultiValueMap<>();
+        MultiValueMap<String, List<String>> userIdSongUrlEmotionMap = new LinkedMultiValueMap<>();
 
         log.info("Entries to be Re-trained:");
         userIdSongIdList.forEach(tuple -> {
@@ -80,12 +98,11 @@ public class SchedulingServiceImpl implements SchedulingService {
             String emotion = tuple.get(2).toString();
 
             log.info("UserId: {}; Song id: {}; Emotion: {}", userId, songId, emotion);
-            String modelUrl = userIdModelWeightsUrlMap.get(userId);
             String songUrl = songIdSongUrlMap.get(songId);
 
-            modelWeightsUrlSongUrlMap.add(Arrays.asList(userId, modelUrl), Arrays.asList(songUrl, emotion));
+            userIdSongUrlEmotionMap.add(userId, Arrays.asList(songUrl, emotion));
         });
 
-        return modelWeightsUrlSongUrlMap;
+        return userIdSongUrlEmotionMap;
     }
 }

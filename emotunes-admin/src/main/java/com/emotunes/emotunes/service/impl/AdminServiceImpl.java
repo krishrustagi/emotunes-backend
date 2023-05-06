@@ -1,6 +1,5 @@
 package com.emotunes.emotunes.service.impl;
 
-import com.emotunes.emotunes.client.MachineLearningClient;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongMappingDao;
@@ -10,6 +9,7 @@ import com.emotunes.emotunes.entity.StoredSong;
 import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.helper.AdminHelper;
+import com.emotunes.emotunes.helper.MachineLearningHelper;
 import com.emotunes.emotunes.service.AdminService;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static com.emotunes.emotunes.constants.AzureStorageConstans.DEFAULT_MODEL_WEIGHTS_URL;
@@ -55,8 +53,8 @@ public class AdminServiceImpl implements AdminService {
     private final SongsDao songsDao;
     private final UserDao userDao;
     private final UserSongMappingDao userSongMappingDao;
-    private final MachineLearningClient machineLearningClient;
     private final AdminHelper adminHelper;
+    private final MachineLearningHelper machineLearningHelper;
 
     @Override
     public String addSongs(List<MultipartFile> songFiles) {
@@ -113,7 +111,9 @@ public class AdminServiceImpl implements AdminService {
 
             String thumbnailUrl = saveThumbnail(tag, title);
 
-            Emotion defaultEmotion = Emotion.valueOf(predictSongEmotion(songUrl, DEFAULT_MODEL_WEIGHTS_URL));
+            Emotion defaultEmotion = Emotion.valueOf(
+                    machineLearningHelper.predictSongEmotion(songUrl, DEFAULT_MODEL_WEIGHTS_URL));
+
             SongMetadata songMetadata =
                     SongMetadata.builder()
                             .title(title)
@@ -173,7 +173,8 @@ public class AdminServiceImpl implements AdminService {
     private void availSongToAllUsers(String songId, String songUrl) {
         List<StoredUser> userList = userDao.findAll();
         for (StoredUser user : userList) {
-            predictEmotionAndPersistMapping(user.getId(), songId, songUrl, user.getModelWeightsUrl());
+            String songEmotion = machineLearningHelper.predictSongEmotion(songUrl, user.getModelWeightsUrl());
+            persistUserSongMapping(user.getId(), songId, Emotion.valueOf(songEmotion));
         }
     }
 
@@ -208,19 +209,5 @@ public class AdminServiceImpl implements AdminService {
         songList.forEach(song -> {
             userSongMappingDao.addMapping(userId, song.getId(), song.getDefaultEmotion());
         });
-    }
-
-    private void predictEmotionAndPersistMapping(
-            String userId, String songId, String songUrl, String modelWeightsUrl) {
-        String songEmotion = predictSongEmotion(songUrl, modelWeightsUrl);
-        persistUserSongMapping(userId, songId, Emotion.valueOf(songEmotion));
-    }
-
-    private String predictSongEmotion(String songUrl, String modelWeightsUrl) {
-        Map<String, String> multiValueMap = new HashMap<>();
-        multiValueMap.put("song_url", songUrl);
-        multiValueMap.put("model_weights_url", modelWeightsUrl);
-
-        return machineLearningClient.predictEmotion(multiValueMap);
     }
 }
