@@ -7,7 +7,6 @@ import com.emotunes.emotunes.helper.SchedulingHelper;
 import com.emotunes.emotunes.service.SchedulingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -31,7 +30,6 @@ public class SchedulingServiceImpl implements SchedulingService {
     private final SongsDao songsDao;
     private final SchedulingHelper schedulingHelper;
 
-    @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void scheduleReTraining() {
         List<Tuple> userIdSongIdList = userSongEmotionPreferenceDao.getUserIdSongIdEmotion(FETCH_COUNT_LIMIT);
@@ -51,10 +49,11 @@ public class SchedulingServiceImpl implements SchedulingService {
         Map<String, String> songIdSongUrlMap = createMapFromTupleList(songsDao.getSongUrls(songIdList));
         Map<String, String> userIdModelWeightsUrlMap = createMapFromTupleList(userDao.getModelWeightsUrls(userIdList));
 
-        MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap =
-                createModelWeightsUrlSongUrlMap(userIdSongIdList, songIdSongUrlMap, userIdModelWeightsUrlMap);
+        MultiValueMap<String, List<String>> userIdSongUrlEmotionMap =
+                createUserIdSongUrlEmotionMap(userIdSongIdList, songIdSongUrlMap);
+
         try {
-            schedulingHelper.reTrainAndUpdateNewWeights(modelWeightsUrlSongUrlMap);
+            schedulingHelper.reTrainAndUpdateNewWeights(userIdSongUrlEmotionMap, userIdModelWeightsUrlMap);
         } catch (Exception e) {
             log.error("Error while re training and updating new weights!", e);
         }
@@ -67,11 +66,10 @@ public class SchedulingServiceImpl implements SchedulingService {
                         tuple -> tuple.get(1).toString()));
     }
 
-    private MultiValueMap<List<String>, List<String>> createModelWeightsUrlSongUrlMap(
-            List<Tuple> userIdSongIdList, Map<String, String> songIdSongUrlMap,
-            Map<String, String> userIdModelWeightsUrlMap) {
+    private MultiValueMap<String, List<String>> createUserIdSongUrlEmotionMap(
+            List<Tuple> userIdSongIdList, Map<String, String> songIdSongUrlMap) {
 
-        MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap = new LinkedMultiValueMap<>();
+        MultiValueMap<String, List<String>> userIdSongUrlEmotionMap = new LinkedMultiValueMap<>();
 
         log.info("Entries to be Re-trained:");
         userIdSongIdList.forEach(tuple -> {
@@ -80,12 +78,11 @@ public class SchedulingServiceImpl implements SchedulingService {
             String emotion = tuple.get(2).toString();
 
             log.info("UserId: {}; Song id: {}; Emotion: {}", userId, songId, emotion);
-            String modelUrl = userIdModelWeightsUrlMap.get(userId);
             String songUrl = songIdSongUrlMap.get(songId);
 
-            modelWeightsUrlSongUrlMap.add(Arrays.asList(userId, modelUrl), Arrays.asList(songUrl, emotion));
+            userIdSongUrlEmotionMap.add(userId, Arrays.asList(songUrl, emotion));
         });
 
-        return modelWeightsUrlSongUrlMap;
+        return userIdSongUrlEmotionMap;
     }
 }

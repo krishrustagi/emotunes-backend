@@ -2,6 +2,7 @@ package com.emotunes.emotunes.helper;
 
 import com.emotunes.emotunes.client.MachineLearningClient;
 import com.emotunes.emotunes.dao.UserDao;
+import com.emotunes.emotunes.dao.UserSongEmotionPreferenceDao;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.emotunes.emotunes.constants.AzureStorageConstans.MODEL_WEIGHTS_CONTAINER;
 
@@ -24,17 +26,34 @@ public class SchedulingHelper {
     private final FileUploadHelper fileUploadHelper;
     private final MachineLearningClient machineLearningClient;
     private final UserDao userDao;
+    private final UserSongEmotionPreferenceDao userSongEmotionPreferenceDao;
 
-    public void reTrainAndUpdateNewWeights(MultiValueMap<List<String>, List<String>> modelWeightsUrlSongUrlMap) {
-        modelWeightsUrlSongUrlMap.forEach((userIdModelWeights, songUrlEmotion) -> {
-            String userId = userIdModelWeights.get(0);
-            String modelWeightsUrl = userIdModelWeights.get(1);
+    public void reTrainAndUpdateNewWeights(
+            MultiValueMap<String, List<String>> userIdSongUrlEmotionMap,
+            Map<String, String> userIdModelWeightsUrlMap) {
+        userIdSongUrlEmotionMap.forEach((userId, songUrlEmotionList) -> {
 
-            File newModelWeights = sendForRetraining(modelWeightsUrl, songUrlEmotion.get(0), songUrlEmotion.get(1));
+            String modelWeightsUrl = userIdModelWeightsUrlMap.get(userId);
+
+            List<String> songUrlList =
+                    songUrlEmotionList
+                            .stream()
+                            .map(songUrlEmotion -> songUrlEmotion.get(0))
+                            .collect(Collectors.toList());
+
+            List<String> songEmotionList =
+                    songUrlEmotionList
+                            .stream()
+                            .map(songUrlEmotion -> songUrlEmotion.get(1))
+                            .collect(Collectors.toList());
+
+            File newModelWeights =
+                    sendForRetraining(modelWeightsUrl, songUrlList, songEmotionList);
 
             try {
                 String newModelWeightsUrl = uploadModelWeightsFileAndGetUrl(newModelWeights);
                 userDao.updateModelWeightsUrlByUserId(userId, newModelWeightsUrl);
+                userSongEmotionPreferenceDao.deleteAllByUserId(userId);
             } catch (IOException e) {
                 log.error("Error while saving new model weights!");
             }

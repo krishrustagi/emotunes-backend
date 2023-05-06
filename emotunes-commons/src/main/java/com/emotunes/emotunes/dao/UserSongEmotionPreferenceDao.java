@@ -5,6 +5,7 @@ import com.emotunes.emotunes.mapper.UserSongEmotionPreferenceMapper;
 import com.emotunes.emotunes.repository.UserSongEmotionPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Tuple;
 import java.util.List;
@@ -22,5 +23,10 @@ public class UserSongEmotionPreferenceDao {
 
     public List<Tuple> getUserIdSongIdEmotion(long limit) {
         return userSongEmotionPreferenceRepository.findUserIdSongIdWithUserCountLimit(limit);
+    }
+
+    @Transactional
+    public void deleteAllByUserId(String userId) {
+        userSongEmotionPreferenceRepository.deleteAllByUserId(userId);
     }
 }
