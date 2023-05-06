@@ -3,6 +3,10 @@ package com.emotunes.emotunes.service.impl;
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongEmotionPreferenceDao;
+import com.emotunes.emotunes.dao.UserSongMappingDao;
+import com.emotunes.emotunes.entity.StoredSong;
+import com.emotunes.emotunes.enums.Emotion;
+import com.emotunes.emotunes.helper.MachineLearningHelper;
 import com.emotunes.emotunes.helper.SchedulingHelper;
 import com.emotunes.emotunes.service.SchedulingService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,8 @@ public class SchedulingServiceImpl implements SchedulingService {
     private final UserDao userDao;
     private final SongsDao songsDao;
     private final SchedulingHelper schedulingHelper;
+    private final MachineLearningHelper machineLearningHelper;
+    private final UserSongMappingDao userSongMappingDao;
 
     @Override
     public void scheduleReTraining() {
@@ -57,6 +63,20 @@ public class SchedulingServiceImpl implements SchedulingService {
         } catch (Exception e) {
             log.error("Error while re training and updating new weights!", e);
         }
+
+        // predict song for all users whose models have changed
+        List<StoredSong> songList = songsDao.getAllSongs();
+        userIdList.forEach(userId -> {
+            songList.forEach(song -> {
+                    String songEmotion = machineLearningHelper.predictSongEmotion(song.getSongUrl(),
+                            userIdModelWeightsUrlMap.get(userId));
+                    updateUserSongMapping(userId, song.getId(), Emotion.valueOf(songEmotion));
+            });
+        });
+    }
+
+    private void updateUserSongMapping(String userId, String songId, Emotion emotion) {
+        userSongMappingDao.updateSongEmotionForUser(userId, songId, emotion);
     }
 
     private Map<String, String> createMapFromTupleList(List<Tuple> tupleList) {

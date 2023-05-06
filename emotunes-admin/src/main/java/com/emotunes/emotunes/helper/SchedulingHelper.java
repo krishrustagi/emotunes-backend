@@ -1,6 +1,5 @@
 package com.emotunes.emotunes.helper;
 
-import com.emotunes.emotunes.client.MachineLearningClient;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongEmotionPreferenceDao;
 import com.emotunes.emotunes.util.IdGenerationUtil;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,9 +22,9 @@ import static com.emotunes.emotunes.constants.AzureStorageConstans.MODEL_WEIGHTS
 public class SchedulingHelper {
 
     private final FileUploadHelper fileUploadHelper;
-    private final MachineLearningClient machineLearningClient;
     private final UserDao userDao;
     private final UserSongEmotionPreferenceDao userSongEmotionPreferenceDao;
+    private final MachineLearningHelper machineLearningHelper;
 
     public void reTrainAndUpdateNewWeights(
             MultiValueMap<String, List<String>> userIdSongUrlEmotionMap,
@@ -61,12 +59,8 @@ public class SchedulingHelper {
     }
 
     private File sendForRetraining(String modelWeightsUrl, List<String> songUrls, List<String> emotions) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("model_weights_url", modelWeightsUrl);
-        map.put("song_urls", songUrls);
-        map.put("emotions", emotions);
 
-        byte[] fileBytes = machineLearningClient.reTraining(map).getBody();
+        byte[] fileBytes = machineLearningHelper.reTrainAndGetModelFile(modelWeightsUrl, songUrls, emotions);
 
         try (InputStream inputStream = new ByteArrayInputStream(fileBytes)) {
             String modelFileName = IdGenerationUtil.getRandomId();
