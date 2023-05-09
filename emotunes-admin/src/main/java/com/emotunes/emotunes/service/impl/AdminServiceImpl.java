@@ -2,11 +2,8 @@ package com.emotunes.emotunes.service.impl;
 
 import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
-import com.emotunes.emotunes.dao.UserSongMappingDao;
 import com.emotunes.emotunes.dto.SongMetadata;
 import com.emotunes.emotunes.dto.UserDto;
-import com.emotunes.emotunes.entity.StoredSong;
-import com.emotunes.emotunes.entity.StoredUser;
 import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.helper.AdminHelper;
 import com.emotunes.emotunes.helper.MachineLearningHelper;
@@ -52,7 +49,6 @@ public class AdminServiceImpl implements AdminService {
 
     private final SongsDao songsDao;
     private final UserDao userDao;
-    private final UserSongMappingDao userSongMappingDao;
     private final AdminHelper adminHelper;
     private final MachineLearningHelper machineLearningHelper;
 
@@ -80,12 +76,14 @@ public class AdminServiceImpl implements AdminService {
             userDto.setModelWeightsUrl(DEFAULT_MODEL_WEIGHTS_URL);
             userDao.save(userDto);
 
-            availAllSongsToUser(userDto.getUserId());
+            adminHelper.availAllSongsToNewUser(userDto.getUserId());
             return "User added successfully!";
         }
 
         return "User Already Registered!";
     }
+
+    // --- Private Methods --- //
 
     private File convertToAudioFile(MultipartFile file) throws IOException {
         File tempFile = File.createTempFile(Objects.requireNonNull(file.getOriginalFilename()), ".mp3");
@@ -128,7 +126,7 @@ public class AdminServiceImpl implements AdminService {
 
             String songId = persistSong(songMetadata);
 
-            availSongToAllUsers(songId, songUrl);
+            adminHelper.availSongToAllUsers(songId, songUrl);
 
         } catch (Exception e) {
             log.error("Error while getting audio details! ", e);
@@ -138,10 +136,6 @@ public class AdminServiceImpl implements AdminService {
 
     private String persistSong(SongMetadata songMetadata) {
         return songsDao.addSong(songMetadata);
-    }
-
-    private void persistUserSongMapping(String userId, String songId, Emotion emotion) {
-        userSongMappingDao.addMapping(userId, songId, emotion);
     }
 
     private long getDuration(AudioFile audioFile) {
@@ -170,14 +164,6 @@ public class AdminServiceImpl implements AdminService {
         return DEFAULT_THUMBNAIL_URL;
     }
 
-    private void availSongToAllUsers(String songId, String songUrl) {
-        List<StoredUser> userList = userDao.findAll();
-        for (StoredUser user : userList) {
-            String songEmotion = machineLearningHelper.predictSongEmotion(songUrl, user.getModelWeightsUrl());
-            persistUserSongMapping(user.getId(), songId, Emotion.valueOf(songEmotion));
-        }
-    }
-
     private String getArtistName(String s) {
         if (s == null) {
             return "UNKNOWN";
@@ -193,21 +179,17 @@ public class AdminServiceImpl implements AdminService {
             title = title.replace('_', ' ');
             title = title.replaceAll("\\s*\\(\\s*", " (");
             title = title.replaceAll("\\s*\\)\\s*", ") ");
+
             if (title.endsWith(".mp3")) {
                 title = title.substring(0, title.length() - 4);
             }
+
+            title = title.substring(0, title.indexOf("||"));
         } catch (NullPointerException e) {
             log.error("Title can't be null! ", e);
             throw e;
         }
 
         return title;
-    }
-
-    private void availAllSongsToUser(String userId) {
-        List<StoredSong> songList = songsDao.getAllSongs();
-        songList.forEach(song -> {
-            userSongMappingDao.addMapping(userId, song.getId(), song.getDefaultEmotion());
-        });
     }
 }

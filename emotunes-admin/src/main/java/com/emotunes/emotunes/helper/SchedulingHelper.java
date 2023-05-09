@@ -1,7 +1,11 @@
 package com.emotunes.emotunes.helper;
 
+import com.emotunes.emotunes.dao.SongsDao;
 import com.emotunes.emotunes.dao.UserDao;
 import com.emotunes.emotunes.dao.UserSongEmotionPreferenceDao;
+import com.emotunes.emotunes.dao.UserSongMappingDao;
+import com.emotunes.emotunes.entity.StoredSong;
+import com.emotunes.emotunes.enums.Emotion;
 import com.emotunes.emotunes.util.IdGenerationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +29,8 @@ public class SchedulingHelper {
     private final UserDao userDao;
     private final UserSongEmotionPreferenceDao userSongEmotionPreferenceDao;
     private final MachineLearningHelper machineLearningHelper;
+    private final SongsDao songsDao;
+    private final UserSongMappingDao userSongMappingDao;
 
     public void reTrainAndUpdateNewWeights(
             MultiValueMap<String, List<String>> userIdSongUrlEmotionMap,
@@ -58,6 +64,20 @@ public class SchedulingHelper {
         });
     }
 
+    // predict song for all users whose model have changed
+    public void predictAndUpdateSongEmotionForUserList(
+            List<String> userIdList, Map<String, String> userIdModelWeightsUrlMap) {
+        List<StoredSong> songList = songsDao.getAllSongs();
+        userIdList.forEach(userId ->
+                songList.forEach(song -> {
+                    String songEmotion = machineLearningHelper.predictSongEmotion(song.getSongUrl(),
+                            userIdModelWeightsUrlMap.get(userId));
+                    updateUserSongMapping(userId, song.getId(), Emotion.valueOf(songEmotion));
+                }));
+    }
+
+    // --- Private Methods --- //
+
     private File sendForRetraining(String modelWeightsUrl, List<String> songUrls, List<String> emotions) {
 
         byte[] fileBytes = machineLearningHelper.reTrainAndGetModelFile(modelWeightsUrl, songUrls, emotions);
@@ -81,5 +101,9 @@ public class SchedulingHelper {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    private void updateUserSongMapping(String userId, String songId, Emotion emotion) {
+        userSongMappingDao.updateSongEmotionForUser(userId, songId, emotion);
     }
 }
