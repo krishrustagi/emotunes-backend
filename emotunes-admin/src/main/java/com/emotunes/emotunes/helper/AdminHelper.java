@@ -48,16 +48,20 @@ public class AdminHelper {
     public void availSongToAllUsers(String songId, String songUrl) {
         List<StoredUser> userList = userDao.findAll();
         for (StoredUser user : userList) {
-            String songEmotion = machineLearningHelper.predictSongEmotion(songUrl, user.getModelWeightsUrl());
-            persistUserSongMapping(user.getId(), songId, Emotion.valueOf(songEmotion));
+            try {
+                String songEmotion = machineLearningHelper.predictSongEmotion(songUrl, user.getModelWeightsUrl());
+                persistUserSongMapping(user.getId(), songId, Emotion.valueOf(songEmotion));
+            } catch (Exception e) {
+                log.error("Error while availing song id {} to user id: {}", songId, user.getId());
+            }
         }
     }
 
     public void availAllSongsToNewUser(String userId) {
         List<StoredSong> songList = songsDao.getAllSongs();
-        songList.forEach(song -> {
-            userSongMappingDao.addMapping(userId, song.getId(), song.getDefaultEmotion());
-        });
+        songList.forEach(song ->
+                userSongMappingDao.addMapping(userId, song.getId(), song.getDefaultEmotion())
+        );
     }
 
     // --- Private Methods ---- //
