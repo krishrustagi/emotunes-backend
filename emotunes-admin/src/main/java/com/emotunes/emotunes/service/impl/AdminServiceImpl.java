@@ -126,7 +126,7 @@ public class AdminServiceImpl implements AdminService {
 
             String songId = persistSong(songMetadata);
 
-            adminHelper.availSongToAllUsers(songId, songUrl);
+            adminHelper.availSongToAllUsers(songId, songUrl, defaultEmotion);
 
         } catch (Exception e) {
             log.error("Error while getting audio details! ", e);

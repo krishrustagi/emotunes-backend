@@ -45,12 +45,19 @@ public class AdminHelper {
         }
     }
 
-    public void availSongToAllUsers(String songId, String songUrl) {
+    public void availSongToAllUsers(String songId, String songUrl, Emotion defaultEmotion) {
         List<StoredUser> userList = userDao.findAll();
         for (StoredUser user : userList) {
             try {
-                String songEmotion = machineLearningHelper.predictSongEmotion(songUrl, user.getModelWeightsUrl());
-                persistUserSongMapping(user.getId(), songId, Emotion.valueOf(songEmotion));
+                Emotion songEmotion;
+                if (user.getModelWeightsUrl().equals(DEFAULT_MODEL_WEIGHTS_URL)) {
+                    songEmotion = defaultEmotion;
+                } else {
+                    songEmotion = Emotion.valueOf(machineLearningHelper.predictSongEmotion(songUrl,
+                            user.getModelWeightsUrl()));
+                }
+
+                persistUserSongMapping(user.getId(), songId, songEmotion);
             } catch (Exception e) {
                 log.error("Error while availing song id {} to user id: {}", songId, user.getId());
             }
