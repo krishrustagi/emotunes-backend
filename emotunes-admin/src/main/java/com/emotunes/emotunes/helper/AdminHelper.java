@@ -49,10 +49,8 @@ public class AdminHelper {
         List<StoredUser> userList = userDao.findAll();
         for (StoredUser user : userList) {
             try {
-                Emotion songEmotion;
-                if (user.getModelWeightsUrl().equals(DEFAULT_MODEL_WEIGHTS_URL)) {
-                    songEmotion = defaultEmotion;
-                } else {
+                Emotion songEmotion = defaultEmotion;
+                if (!user.getModelWeightsUrl().equals(DEFAULT_MODEL_WEIGHTS_URL)) {
                     songEmotion = Emotion.valueOf(machineLearningHelper.predictSongEmotion(songUrl,
                             user.getModelWeightsUrl()));
                 }
